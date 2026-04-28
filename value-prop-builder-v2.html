@@ -1,0 +1,1903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Value Proposition · Builder</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F2EEE4;
+    --paper: #FBF8F0;
+    --ink: #1A1714;
+    --ink-sec: #6A655E;
+    --ink-ter: #A39C90;
+    --ink-fade: #C7C1B4;
+    --accent: #C94A2B;
+    --accent-soft: #F0D4C7;
+    --hairline: #D9D3C3;
+
+    /* Driver cluster colors, 6 soft pastels */
+    --c1: #F7E9BE;
+    --c2: #F0D4C7;
+    --c3: #DCE6D5;
+    --c4: #D6E3EB;
+    --c5: #E3D9E6;
+    --c6: #EDE5D4;
+
+    --font-ui: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100%;
+    overflow-x: hidden;
+    line-height: 1.4;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(201, 74, 43, 0.04), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(26, 23, 20, 0.03), transparent 40%);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 40px 18px;
+    border-bottom: 1px solid var(--hairline);
+    position: relative;
+    z-index: 10;
+    background: var(--bg);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .brand-mark {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .brand-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+    font-weight: 500;
+  }
+
+  #back-to-intro {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink-sec);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+  #back-to-intro:hover { color: var(--ink); border-color: var(--ink); }
+
+  .step-nav {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .step-btn {
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 9px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    letter-spacing: -0.005em;
+  }
+  .step-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .step-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .step-btn .num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-ter);
+    font-weight: 500;
+  }
+  .step-btn.active .num { color: var(--accent-soft); }
+  .step-btn.complete .num { color: var(--accent); }
+  .step-btn.active.complete .num { color: var(--accent-soft); }
+
+  .controls {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .ctrl-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ctrl-btn:hover { border-color: var(--ink); color: var(--ink); }
+
+  /* View switching */
+  body.home-view .step-nav,
+  body.home-view .controls,
+  body.home-view #back-to-intro,
+  body.home-view #builder-view { display: none !important; }
+  body.builder-view #home-view { display: none !important; }
+
+  /* ============================================ */
+  /* ===== HOME VIEW                          ===== */
+  /* ============================================ */
+
+  #home-view { position: relative; z-index: 2; }
+
+  .home-hero {
+    padding: 90px 40px 90px;
+    max-width: 1500px;
+  }
+  .home-hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 36px;
+  }
+  .home-hero h1 {
+    font-size: clamp(72px, 10.5vw, 180px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: var(--ink);
+  }
+  .home-hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .home-hero-lede {
+    font-size: clamp(22px, 2.3vw, 32px);
+    line-height: 1.3;
+    color: var(--ink-sec);
+    max-width: 840px;
+    margin-bottom: 48px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .home-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 22px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .btn-secondary:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .home-section {
+    padding: 90px 40px 100px;
+    border-top: 1px solid var(--hairline);
+    max-width: 1500px;
+  }
+  .home-section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .home-section h2 {
+    font-size: clamp(44px, 5.6vw, 82px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+    margin-bottom: 34px;
+    max-width: 1200px;
+    color: var(--ink);
+  }
+  .home-section h2 em { font-style: italic; color: var(--accent); }
+  .home-section p.lede {
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.35;
+    color: var(--ink);
+    max-width: 900px;
+    margin-bottom: 18px;
+    font-weight: 400;
+    letter-spacing: -0.008em;
+  }
+  .home-section p.body {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-sec);
+    max-width: 760px;
+    margin-bottom: 16px;
+  }
+  .home-section p.body strong { color: var(--ink); font-weight: 500; }
+
+  /* Pyramid / hierarchy diagram */
+  .hierarchy {
+    margin-top: 48px;
+    max-width: 1200px;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 4px;
+    position: relative;
+  }
+  .hierarchy-level {
+    padding: 36px 28px 40px;
+    border-radius: 2px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    position: relative;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+  }
+  .hierarchy-level .num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 14px;
+    font-weight: 500;
+  }
+  .hierarchy-level h4 {
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.08;
+    margin-bottom: 14px;
+  }
+  .hierarchy-level p {
+    font-size: 15px;
+    color: var(--ink-sec);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .hierarchy-level .example {
+    margin-top: auto;
+    padding-top: 16px;
+    border-top: 1px dashed var(--hairline);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--ink);
+    line-height: 1.5;
+  }
+  .hierarchy-level .example span {
+    display: block;
+    padding: 2px 0;
+  }
+
+  /* Why bottom-up */
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 48px;
+  }
+  .compare-card {
+    padding: 44px 36px;
+    border-radius: 2px;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+  }
+  .compare-card.light { background: var(--paper); border: 1px solid var(--hairline); }
+  .compare-card.dark { background: var(--ink); color: var(--paper); }
+  .compare-card .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    color: var(--ink-ter);
+  }
+  .compare-card.dark .label { color: var(--accent); }
+  .compare-card h3 {
+    font-size: 38px;
+    line-height: 1.05;
+    letter-spacing: -0.025em;
+    font-weight: 600;
+    margin-bottom: 22px;
+  }
+  .compare-card p {
+    font-size: 16px;
+    line-height: 1.55;
+    color: var(--ink-sec);
+    margin: 0;
+  }
+  .compare-card.dark p { color: rgba(251, 248, 240, 0.78); }
+
+  .home-footer {
+    padding: 28px 40px;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ============================================ */
+  /* ===== BUILDER VIEW                        === */
+  /* ============================================ */
+
+  #builder-view {
+    position: relative;
+    z-index: 2;
+    padding: 48px 40px 120px;
+    max-width: 1500px;
+  }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-header {
+    margin-bottom: 36px;
+    max-width: 1000px;
+  }
+  .step-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .step-title {
+    font-size: clamp(38px, 4.4vw, 60px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .step-title em { font-style: italic; color: var(--accent); }
+  .step-body {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-sec);
+    max-width: 720px;
+    margin-bottom: 10px;
+  }
+  .step-body strong { color: var(--ink); font-weight: 500; }
+
+  /* Tip callout */
+  .tip {
+    background: var(--accent-soft);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin: 20px 0 24px;
+    border-radius: 2px;
+    max-width: 800px;
+  }
+  .tip-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .tip-body {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  /* ===== STEP 1: ENABLERS ===== */
+  .enabler-form {
+    display: grid;
+    grid-template-columns: 1fr 2fr auto;
+    gap: 8px;
+    padding: 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    margin-bottom: 24px;
+    max-width: 1100px;
+  }
+  .enabler-form input {
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .enabler-form input:focus { border-color: var(--accent); }
+  .enabler-form input::placeholder { color: var(--ink-ter); }
+  .enabler-form button {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 12px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .enabler-form button:hover { background: var(--accent); }
+
+  .enabler-list {
+    display: grid;
+    gap: 4px;
+    max-width: 1100px;
+  }
+  .enabler-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 2fr 40px;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    align-items: center;
+    transition: border-color 0.15s ease;
+  }
+  .enabler-row:hover { border-color: var(--ink-ter); }
+  .enabler-row .n {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-ter);
+    font-weight: 500;
+    letter-spacing: 0.05em;
+  }
+  .enabler-row .name {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    padding: 4px 0;
+    outline: none;
+    border-radius: 2px;
+  }
+  .enabler-row .name:focus { background: var(--accent-soft); padding: 4px 6px; }
+  .enabler-row .desc {
+    font-size: 13.5px;
+    color: var(--ink-sec);
+    padding: 4px 0;
+    outline: none;
+    border-radius: 2px;
+  }
+  .enabler-row .desc:focus { background: var(--accent-soft); padding: 4px 6px; }
+  .enabler-row .desc:empty::before {
+    content: attr(data-placeholder);
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+  .enabler-row .remove {
+    width: 28px;
+    height: 28px;
+    border: none;
+    background: transparent;
+    color: var(--ink-ter);
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 16px;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.15s ease;
+  }
+  .enabler-row .remove:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .count-status {
+    margin-top: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+  }
+  .count-status.ok { color: var(--accent); }
+
+  /* ===== STEP 2: CLUSTER ===== */
+  .cluster-layout {
+    display: grid;
+    grid-template-columns: 300px 1fr;
+    gap: 24px;
+    align-items: flex-start;
+  }
+
+  .unassigned-col {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 20px;
+    border-radius: 2px;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
+  }
+  .unassigned-col h3 {
+    font-size: 16px;
+    font-weight: 600;
+    margin-bottom: 6px;
+    letter-spacing: -0.01em;
+  }
+  .unassigned-col .hint {
+    font-size: 12.5px;
+    color: var(--ink-sec);
+    margin-bottom: 18px;
+    line-height: 1.45;
+  }
+
+  .driver-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 14px;
+    align-content: start;
+  }
+
+  .driver-board {
+    padding: 18px 18px 14px;
+    border-radius: 2px;
+    border: 1.5px solid transparent;
+    min-height: 180px;
+    position: relative;
+    transition: border-color 0.15s ease;
+  }
+  .driver-board.drag-over {
+    border-color: var(--ink);
+    border-style: dashed;
+  }
+
+  .driver-board-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .driver-board-name {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--ink);
+    outline: none;
+    flex: 1;
+    letter-spacing: -0.01em;
+    padding: 3px 6px;
+    margin: -3px -6px;
+    border-radius: 2px;
+  }
+  .driver-board-name:focus { background: rgba(255,255,255,0.5); }
+  .driver-board-name:empty::before {
+    content: "Name this driver…";
+    color: var(--ink-fade);
+    font-style: italic;
+    font-weight: 400;
+  }
+  .driver-board-remove {
+    border: none;
+    background: transparent;
+    color: var(--ink-sec);
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 4px;
+    line-height: 1;
+  }
+  .driver-board-remove:hover { color: var(--ink); }
+
+  .driver-board-cards {
+    display: grid;
+    gap: 6px;
+    min-height: 60px;
+  }
+  .driver-board-empty {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-sec);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 20px 0;
+    text-align: center;
+    opacity: 0.5;
+  }
+
+  .enabler-card {
+    background: rgba(255, 255, 255, 0.75);
+    padding: 10px 12px;
+    border-radius: 2px;
+    font-size: 13.5px;
+    line-height: 1.35;
+    cursor: grab;
+    user-select: none;
+    border: 1px solid rgba(0,0,0,0.06);
+    transition: transform 0.1s ease, box-shadow 0.15s ease;
+  }
+  .enabler-card:hover {
+    box-shadow: 0 2px 8px rgba(26, 23, 20, 0.06);
+  }
+  .enabler-card:active { cursor: grabbing; }
+  .enabler-card.dragging { opacity: 0.3; }
+  .enabler-card .card-name { font-weight: 500; color: var(--ink); }
+  .enabler-card .card-desc {
+    font-size: 12px;
+    color: var(--ink-sec);
+    margin-top: 3px;
+    display: block;
+  }
+
+  /* Unassigned cards style */
+  .unassigned-col .enabler-card {
+    background: var(--bg);
+    border-color: var(--hairline);
+  }
+  .unassigned-col .empty-msg {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-ter);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    padding: 20px 0;
+    text-align: center;
+  }
+
+  .add-driver-btn {
+    padding: 16px;
+    border: 1px dashed var(--ink-ter);
+    background: transparent;
+    color: var(--ink-sec);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    min-height: 180px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .add-driver-btn:hover {
+    border-color: var(--ink);
+    color: var(--ink);
+    border-style: solid;
+  }
+
+  /* ===== STEP 3: DESCRIBE ===== */
+  .describe-list {
+    display: grid;
+    gap: 24px;
+    max-width: 1200px;
+  }
+  .describe-card {
+    padding: 28px;
+    border-radius: 2px;
+    border: 1.5px solid transparent;
+  }
+  .describe-card h3 {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .describe-card .dname {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.02em;
+    margin-bottom: 20px;
+  }
+  .describe-card label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .describe-card textarea {
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.5;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    background: rgba(255,255,255,0.6);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    min-height: 70px;
+    transition: border-color 0.15s ease;
+  }
+  .describe-card textarea:focus { border-color: var(--accent); }
+  .describe-card textarea::placeholder { color: var(--ink-ter); font-style: italic; }
+
+  .enabler-summary {
+    margin-top: 16px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+  .enabler-chip {
+    font-size: 12.5px;
+    padding: 5px 10px;
+    background: rgba(255,255,255,0.6);
+    border-radius: 20px;
+    color: var(--ink);
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  /* ===== STEP 4: COMPOSE ===== */
+  .compose-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+    gap: 48px;
+    align-items: flex-start;
+  }
+  .compose-fields {
+    display: grid;
+    gap: 20px;
+  }
+  .compose-field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .compose-field .helper {
+    font-size: 13px;
+    color: var(--ink-ter);
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+  .compose-field input, .compose-field textarea {
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .compose-field textarea { resize: vertical; min-height: 70px; line-height: 1.5; }
+  .compose-field input:focus, .compose-field textarea:focus { border-color: var(--accent); }
+  .compose-field input::placeholder, .compose-field textarea::placeholder {
+    color: var(--ink-ter);
+    font-style: italic;
+  }
+
+  .preview {
+    position: sticky;
+    top: 20px;
+    padding: 32px 30px 36px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+  }
+  .preview-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .preview-text {
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.3;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.015em;
+  }
+  .preview-text .slot {
+    color: var(--accent);
+    font-style: italic;
+    font-weight: 500;
+  }
+  .preview-text .placeholder {
+    color: var(--ink-fade);
+    font-style: italic;
+    font-weight: 400;
+    border-bottom: 1px dashed var(--ink-fade);
+    padding-bottom: 1px;
+  }
+
+  /* ===== STEP 5: REVIEW / OUTPUT ===== */
+  .review {
+    max-width: none;
+  }
+  .review-vp {
+    padding: 48px 8px 56px;
+    border-bottom: 1px solid var(--hairline);
+    margin-bottom: 56px;
+  }
+  .review-vp-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+  .review-vp-text {
+    font-size: clamp(32px, 3.6vw, 52px);
+    line-height: 1.12;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    max-width: 1250px;
+  }
+  .review-vp-text .highlight {
+    text-decoration: underline;
+    text-decoration-thickness: 2px;
+    text-underline-offset: 6px;
+    text-decoration-color: var(--ink);
+  }
+
+  .review-drivers-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    margin-bottom: 20px;
+    font-weight: 500;
+  }
+
+  .review-drivers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 16px;
+  }
+  .review-driver {
+    padding: 28px 26px 32px;
+    border-radius: 2px;
+    min-height: 260px;
+    display: flex;
+    flex-direction: column;
+  }
+  .review-driver .num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .review-driver h3 {
+    font-size: 24px;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    line-height: 1.12;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+  .review-driver .meaning {
+    font-size: 15px;
+    line-height: 1.5;
+    color: var(--ink-sec);
+    margin-bottom: 20px;
+  }
+  .review-driver .enablers-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    margin-bottom: 10px;
+    margin-top: auto;
+    padding-top: 12px;
+    border-top: 1px solid rgba(0,0,0,0.08);
+    font-weight: 500;
+  }
+  .review-driver ul {
+    list-style: none;
+  }
+  .review-driver ul li {
+    font-size: 14px;
+    color: var(--ink);
+    padding: 3px 0;
+    padding-left: 14px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .review-driver ul li::before {
+    content: "—";
+    position: absolute;
+    left: 0;
+    color: var(--ink-ter);
+  }
+
+  /* ===== STEP FOOTER ===== */
+  .step-footer {
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .step-footer .nav-btn {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 22px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+  .step-footer .nav-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .step-footer .nav-btn.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .step-footer .nav-btn.primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .step-footer .nav-btn.disabled,
+  .step-footer .nav-btn:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .hierarchy { grid-template-columns: 1fr; }
+    .compare-grid { grid-template-columns: 1fr; }
+    .cluster-layout { grid-template-columns: 1fr; }
+    .unassigned-col { position: static; max-height: none; }
+    .compose-layout { grid-template-columns: 1fr; }
+    .preview { position: static; }
+    .topbar { flex-wrap: wrap; }
+    .step-nav { order: 3; width: 100%; justify-content: flex-start; }
+  }
+  @media (max-width: 720px) {
+    .topbar { padding: 14px 20px; }
+    .home-hero { padding: 50px 20px 60px; }
+    .home-section { padding: 60px 20px 70px; }
+    #builder-view { padding: 32px 20px 80px; }
+    .enabler-form { grid-template-columns: 1fr; }
+    .enabler-row { grid-template-columns: 32px 1fr 32px; }
+    .enabler-row .desc { grid-column: 2; }
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    @page { size: landscape; margin: 10mm; }
+    body::before, .topbar, .step-footer { display: none !important; }
+    body { background: white; }
+    #builder-view { padding: 0; }
+    .step-panel { display: block !important; page-break-after: always; }
+    .step-panel:last-child { page-break-after: auto; }
+    /* Only review page is most useful */
+    .step-panel:not([data-step="5"]) { display: none !important; }
+  }
+</style>
+</head>
+<body class="home-view">
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="brand">
+      <span class="brand-mark">Value Proposition</span>
+      <span class="brand-eyebrow">Builder</span>
+    </div>
+    <button id="back-to-intro">← Intro</button>
+  </div>
+
+  <nav class="step-nav" id="step-nav"></nav>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="load-example" title="Load a pre-filled example to demonstrate">Example</button>
+    <button class="ctrl-btn" id="reset-all" title="Clear everything and start over">Reset</button>
+    <button class="ctrl-btn" id="print-btn" title="Print the review page">Print</button>
+  </div>
+</header>
+
+<!-- =================== HOME VIEW =================== -->
+<div id="home-view">
+
+  <section class="home-hero">
+    <div class="home-hero-eyebrow">Intro · A bottom-up method</div>
+    <h1>Value<br><em>Propositions.</em></h1>
+    <p class="home-hero-lede">
+      You already have ideas, features, interventions. This is how you turn that raw list into a sentence that says what you actually stand for.
+    </p>
+    <div class="home-cta">
+      <button class="btn-primary" id="start-btn">Start building →</button>
+      <button class="btn-secondary" id="load-example-2">See a worked example</button>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">01 / What it is</div>
+    <h2>A value proposition is <em>not a feature list</em>.</h2>
+    <p class="lede">It's a one-sentence answer to "why does this matter, and to whom?"</p>
+    <p class="body">
+      A value proposition sits above everything you're building and explains what it's all for. It should be readable by someone who has never seen your designs. It should survive when the features change.
+    </p>
+    <p class="body">
+      <strong>The trap:</strong> most first-draft value propositions are feature lists in disguise. "We offer A, B, and C." That's inventory, not value. The move that separates a value proposition from inventory is grouping features into reasons, and then stating the outcome those reasons add up to.
+    </p>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">02 / The structure</div>
+    <h2>Three layers. Built <em>bottom up</em>.</h2>
+    <p class="body">
+      Don't start from the statement and work down. Start from your concrete ideas and work up. The statement is what emerges, not what you begin with.
+    </p>
+    <div class="hierarchy">
+      <div class="hierarchy-level">
+        <div class="num">01 · The raw material</div>
+        <h4>Enablers</h4>
+        <p>The features, interventions, or touchpoints you've already brainstormed. Concrete things the service does.</p>
+        <div class="example">
+          <span>– Daily Mix playlists</span>
+          <span>– Collaborative playlists</span>
+          <span>– Year-end Wrapped recap</span>
+          <span>– Offline listening</span>
+        </div>
+      </div>
+      <div class="hierarchy-level">
+        <div class="num">02 · The pattern</div>
+        <h4>Engagement drivers</h4>
+        <p>Groups of enablers that serve the same user need. Each driver is a reason someone comes back.</p>
+        <div class="example">
+          <span>– Music tuned to who you are</span>
+          <span>– Listening that's social</span>
+          <span>– Always-on access, anywhere</span>
+          <span>– Discovery that feels effortless</span>
+        </div>
+      </div>
+      <div class="hierarchy-level">
+        <div class="num">03 · The statement</div>
+        <h4>Value proposition</h4>
+        <p>One sentence that ties audience, outcome, drivers, and larger benefit together.</p>
+        <div class="example">
+          <span style="font-family: var(--font-ui); font-style: italic; font-size: 14px; line-height: 1.45; color: var(--ink);">"A streaming service that helps everyday listeners make music feel personal and shareable through tuned recommendations, social listening, and always-on access, turning a daily habit into part of who they are."</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">03 / Why this order</div>
+    <h2>Bottom up earns the sentence.</h2>
+    <div class="compare-grid">
+      <div class="compare-card light">
+        <div class="label">Top-down (common trap)</div>
+        <h3>Sounds right, means nothing.</h3>
+        <p>You start from the vision, adjectives stack up, everything becomes "seamless and delightful." The result floats. It doesn't connect to what you're actually building, so it can't guide decisions later.</p>
+      </div>
+      <div class="compare-card dark">
+        <div class="label">Bottom-up (what this tool does)</div>
+        <h3>Grounded in what's real.</h3>
+        <p>You start from concrete enablers, cluster them into drivers, then synthesise the statement. The statement earns its altitude because every word is anchored in something you're actually designing.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">Now</div>
+    <h2>Ready? Let's <em>build yours.</em></h2>
+    <p class="body">
+      Five steps. You'll list your enablers, group them into drivers, describe what each driver means, compose the statement, then review the full output you can print or share.
+    </p>
+    <div class="home-cta">
+      <button class="btn-primary" id="start-btn-2">Start building →</button>
+    </div>
+  </section>
+
+  <footer class="home-footer">
+    <span>Value Proposition · Builder</span>
+    <span>A bottom-up method</span>
+  </footer>
+
+</div>
+
+<!-- =================== BUILDER VIEW =================== -->
+<div id="builder-view">
+
+  <!-- ===== STEP 1: ENABLERS ===== -->
+  <section class="step-panel active" data-step="1">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 01 / 05</div>
+      <h1 class="step-title">List your <em>enablers.</em></h1>
+      <p class="step-body">
+        These are the concrete features, interventions, or touchpoints you've already brainstormed. Each one is a specific thing your service does. Don't filter yet, list everything. You can have 10, 15, 20. The richer the list, the stronger your clustering in step 2.
+      </p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">Think of each enabler as</div>
+      <div class="tip-body">Something tangible, not a value or a feeling. "Personalised notification" is an enabler. "Feeling seen" is not. "One-tap repurchase" is an enabler. "Convenience" is not.</div>
+    </div>
+
+    <form class="enabler-form" id="enabler-form" onsubmit="return false;">
+      <input type="text" id="enabler-name" placeholder="Name (e.g. Personalised notification)" autocomplete="off">
+      <input type="text" id="enabler-desc" placeholder="Short description (optional)" autocomplete="off">
+      <button type="submit" id="add-enabler">+ Add</button>
+    </form>
+
+    <div class="enabler-list" id="enabler-list"></div>
+
+    <div class="count-status" id="enabler-count">0 enablers added</div>
+  </section>
+
+  <!-- ===== STEP 2: CLUSTER ===== -->
+  <section class="step-panel" data-step="2">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 02 / 05</div>
+      <h1 class="step-title">Cluster into <em>engagement drivers.</em></h1>
+      <p class="step-body">
+        Drag each enabler from the left into a driver group on the right. Enablers that belong together become one driver, a single reason someone engages. Name each driver as you go. Aim for 3 to 5 drivers; more than 6 usually means you're being too granular.
+      </p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">Good drivers name a reason, not a category</div>
+      <div class="tip-body">"Control in the palm of the hand" is a driver. "Mobile features" is a category. Push yourself toward the reason: what does this cluster <em>do for the user</em>?</div>
+    </div>
+
+    <div class="cluster-layout">
+      <aside class="unassigned-col">
+        <h3>Unassigned</h3>
+        <div class="hint">Drag each card into a driver on the right.</div>
+        <div id="unassigned-cards"></div>
+      </aside>
+
+      <div class="driver-grid" id="driver-grid">
+        <button class="add-driver-btn" id="add-driver">+ Add a driver</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEP 3: DESCRIBE ===== -->
+  <section class="step-panel" data-step="3">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 03 / 05</div>
+      <h1 class="step-title">Describe each <em>driver.</em></h1>
+      <p class="step-body">
+        For each driver you created, answer: <strong>what does it mean for the user?</strong> A short sentence. This is the bridge between the features below and the value proposition above.
+      </p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">A good "what it means"</div>
+      <div class="tip-body">"Easy access to the right parts and services when customers need them." It describes the user benefit in plain language. Not the feature, not the business value, but what the user experiences.</div>
+    </div>
+
+    <div class="describe-list" id="describe-list"></div>
+  </section>
+
+  <!-- ===== STEP 4: COMPOSE ===== -->
+  <section class="step-panel" data-step="4">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 04 / 05</div>
+      <h1 class="step-title">Compose the <em>statement.</em></h1>
+      <p class="step-body">
+        Fill these five slots. The statement writes itself on the right as you type. Edit as many times as you need. The word choices matter: strong verbs, plain nouns.
+      </p>
+    </div>
+
+    <div class="compose-layout">
+      <div class="compose-fields">
+        <div class="compose-field">
+          <label>01 · Product / Service name</label>
+          <input type="text" id="vp-product" placeholder="e.g. Spotify, Headspace, Notion, Patagonia">
+          <div class="helper">What is the thing you're making? Name it.</div>
+        </div>
+        <div class="compose-field">
+          <label>02 · Audience</label>
+          <input type="text" id="vp-audience" placeholder="e.g. young adults, business customers, pet parents">
+          <div class="helper">Who is this for? Be specific. "Everyone" means no one.</div>
+        </div>
+        <div class="compose-field">
+          <label>03 · Primary outcome (verb first)</label>
+          <input type="text" id="vp-outcome" placeholder="e.g. make music feel personal, sleep better, organise their work, travel with less friction">
+          <div class="helper">What does the user do or achieve? Start with a verb.</div>
+        </div>
+        <div class="compose-field">
+          <label>04 · Through your drivers</label>
+          <input type="text" id="vp-drivers" readonly>
+          <div class="helper">Auto-filled from step 2. Edit driver names there if needed.</div>
+        </div>
+        <div class="compose-field">
+          <label>05 · Larger benefit or outcome</label>
+          <textarea id="vp-benefit" placeholder="e.g. turning a daily habit into part of who they are, building a lasting relationship with the brand, making everyday moments feel meaningful"></textarea>
+          <div class="helper">What does this add up to? The bigger "so that".</div>
+        </div>
+      </div>
+
+      <aside class="preview">
+        <div class="preview-label">Live Statement</div>
+        <div class="preview-text" id="vp-preview"></div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== STEP 5: REVIEW ===== -->
+  <section class="step-panel" data-step="5">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 05 / 05 · Final output</div>
+      <h1 class="step-title">Your value <em>proposition.</em></h1>
+      <p class="step-body">
+        This is what you've built. Edit anything by going back to the relevant step; the output updates live. Print or save this page as your deliverable.
+      </p>
+    </div>
+
+    <div class="review">
+      <div class="review-vp">
+        <div class="review-vp-label">Value Proposition</div>
+        <div class="review-vp-text" id="review-vp-text"></div>
+      </div>
+
+      <div class="review-drivers-label">Engagement Drivers</div>
+      <div class="review-drivers" id="review-drivers"></div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER NAV ===== -->
+  <div class="step-footer">
+    <button class="nav-btn" id="prev-step">← Previous</button>
+    <button class="nav-btn primary" id="next-step">Continue →</button>
+  </div>
+
+</div>
+
+<script>
+  // ========= STATE =========
+  const STEP_LABELS = [
+    { n: "01", label: "Enablers" },
+    { n: "02", label: "Cluster" },
+    { n: "03", label: "Describe" },
+    { n: "04", label: "Compose" },
+    { n: "05", label: "Review" }
+  ];
+  const DRIVER_COLORS = [
+    "var(--c1)", "var(--c2)", "var(--c3)",
+    "var(--c4)", "var(--c5)", "var(--c6)"
+  ];
+
+  let state = newState();
+
+  function newState() {
+    return {
+      step: 1,
+      enablers: [],      // { id, name, description, driverId: null }
+      drivers: [],       // { id, name, meaning, colorIdx }
+      vp: {
+        product: "",
+        audience: "",
+        outcome: "",
+        benefit: ""
+      }
+    };
+  }
+
+  // ========= UTIL =========
+  function uid() {
+    return Math.random().toString(36).slice(2, 10);
+  }
+  function escapeHTML(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[c]));
+  }
+
+  // ========= VIEW SWITCHING =========
+  function setView(v) {
+    document.body.classList.remove("home-view", "builder-view");
+    document.body.classList.add(v + "-view");
+    window.scrollTo(0, 0);
+  }
+
+  document.getElementById("back-to-intro").onclick = () => setView("home");
+  document.getElementById("start-btn").onclick = () => {
+    setView("builder"); goToStep(1);
+  };
+  document.getElementById("start-btn-2").onclick = () => {
+    setView("builder"); goToStep(1);
+  };
+  document.getElementById("load-example-2").onclick = () => {
+    loadExample(); setView("builder"); goToStep(5);
+  };
+
+  // ========= STEP NAV RENDER =========
+  function renderStepNav() {
+    const nav = document.getElementById("step-nav");
+    nav.innerHTML = "";
+    STEP_LABELS.forEach((s, i) => {
+      const n = i + 1;
+      const b = document.createElement("button");
+      b.className = "step-btn";
+      if (n === state.step) b.classList.add("active");
+      if (stepComplete(n)) b.classList.add("complete");
+      b.innerHTML = `<span class="num">${s.n}</span><span>${s.label}</span>`;
+      b.onclick = () => goToStep(n);
+      nav.appendChild(b);
+    });
+  }
+
+  function stepComplete(n) {
+    if (n === 1) return state.enablers.length >= 3;
+    if (n === 2) return state.drivers.length >= 2 &&
+                        state.drivers.every(d => d.name.trim() &&
+                          state.enablers.filter(e => e.driverId === d.id).length > 0);
+    if (n === 3) return state.drivers.length >= 2 &&
+                        state.drivers.every(d => (d.meaning || "").trim().length > 5);
+    if (n === 4) return state.vp.product.trim() && state.vp.audience.trim() &&
+                        state.vp.outcome.trim() && state.vp.benefit.trim();
+    return false;
+  }
+
+  function goToStep(n) {
+    state.step = n;
+    document.querySelectorAll(".step-panel").forEach(p => {
+      p.classList.toggle("active", parseInt(p.dataset.step, 10) === n);
+    });
+    renderStepNav();
+    renderCurrentStep();
+    updateNavButtons();
+    window.scrollTo(0, 0);
+  }
+
+  function updateNavButtons() {
+    const prev = document.getElementById("prev-step");
+    const next = document.getElementById("next-step");
+    prev.disabled = state.step === 1;
+    if (state.step === 5) {
+      next.textContent = "Print ↓";
+      next.onclick = () => window.print();
+    } else {
+      next.textContent = "Continue →";
+      next.onclick = () => goToStep(state.step + 1);
+    }
+  }
+
+  document.getElementById("prev-step").onclick = () => {
+    if (state.step > 1) goToStep(state.step - 1);
+  };
+  document.getElementById("next-step").onclick = () => goToStep(state.step + 1);
+
+  // ========= STEP 1: ENABLERS =========
+  function renderEnablers() {
+    const list = document.getElementById("enabler-list");
+    list.innerHTML = "";
+    state.enablers.forEach((e, i) => {
+      const row = document.createElement("div");
+      row.className = "enabler-row";
+      row.innerHTML = `
+        <span class="n">${String(i + 1).padStart(2, "0")}</span>
+        <div class="name" contenteditable="true" data-id="${e.id}" data-field="name">${escapeHTML(e.name)}</div>
+        <div class="desc" contenteditable="true" data-id="${e.id}" data-field="description" data-placeholder="Add description…">${escapeHTML(e.description || "")}</div>
+        <button class="remove" data-id="${e.id}" title="Remove">×</button>
+      `;
+      list.appendChild(row);
+    });
+
+    const count = state.enablers.length;
+    const statusEl = document.getElementById("enabler-count");
+    statusEl.classList.toggle("ok", count >= 4);
+    statusEl.textContent = count === 0
+      ? "No enablers yet. Add at least 4 before moving on."
+      : count < 4
+        ? `${count} enabler${count === 1 ? "" : "s"}. Add at least ${4 - count} more.`
+        : `${count} enablers. Ready to cluster.`;
+  }
+
+  document.getElementById("enabler-form").addEventListener("submit", e => {
+    e.preventDefault();
+    addEnabler();
+  });
+  document.getElementById("add-enabler").onclick = addEnabler;
+
+  function addEnabler() {
+    const nameEl = document.getElementById("enabler-name");
+    const descEl = document.getElementById("enabler-desc");
+    const name = nameEl.value.trim();
+    if (!name) { nameEl.focus(); return; }
+    state.enablers.push({
+      id: uid(),
+      name,
+      description: descEl.value.trim(),
+      driverId: null
+    });
+    nameEl.value = ""; descEl.value = "";
+    nameEl.focus();
+    renderEnablers();
+    renderStepNav();
+  }
+
+  document.getElementById("enabler-list").addEventListener("click", e => {
+    if (e.target.classList.contains("remove")) {
+      const id = e.target.dataset.id;
+      state.enablers = state.enablers.filter(x => x.id !== id);
+      renderEnablers();
+      renderStepNav();
+    }
+  });
+  document.getElementById("enabler-list").addEventListener("input", e => {
+    const t = e.target;
+    if (!t.dataset.id || !t.dataset.field) return;
+    const en = state.enablers.find(x => x.id === t.dataset.id);
+    if (!en) return;
+    en[t.dataset.field] = t.textContent;
+    renderStepNav();
+  });
+
+  // ========= STEP 2: CLUSTER =========
+  function renderCluster() {
+    renderUnassigned();
+    renderDrivers();
+  }
+
+  function renderUnassigned() {
+    const box = document.getElementById("unassigned-cards");
+    const unassigned = state.enablers.filter(e => !e.driverId);
+    if (unassigned.length === 0) {
+      box.innerHTML = '<div class="empty-msg">All assigned ✓</div>';
+      return;
+    }
+    box.innerHTML = "";
+    unassigned.forEach(e => {
+      box.appendChild(makeEnablerCard(e));
+    });
+  }
+
+  function makeEnablerCard(e) {
+    const c = document.createElement("div");
+    c.className = "enabler-card";
+    c.draggable = true;
+    c.dataset.id = e.id;
+    c.innerHTML = `
+      <div class="card-name">${escapeHTML(e.name)}</div>
+      ${e.description ? `<span class="card-desc">${escapeHTML(e.description)}</span>` : ""}
+    `;
+    c.addEventListener("dragstart", ev => {
+      ev.dataTransfer.setData("text/enabler-id", e.id);
+      c.classList.add("dragging");
+    });
+    c.addEventListener("dragend", () => {
+      c.classList.remove("dragging");
+    });
+    return c;
+  }
+
+  function renderDrivers() {
+    const grid = document.getElementById("driver-grid");
+    // keep the add button
+    grid.innerHTML = "";
+    state.drivers.forEach((d, i) => {
+      const color = DRIVER_COLORS[d.colorIdx % DRIVER_COLORS.length];
+      const board = document.createElement("div");
+      board.className = "driver-board";
+      board.style.background = color;
+      board.dataset.id = d.id;
+
+      const inside = state.enablers.filter(e => e.driverId === d.id);
+      board.innerHTML = `
+        <div class="driver-board-header">
+          <div class="driver-board-name" contenteditable="true" data-id="${d.id}">${escapeHTML(d.name)}</div>
+          <button class="driver-board-remove" data-id="${d.id}" title="Remove driver (keeps enablers)">×</button>
+        </div>
+        <div class="driver-board-cards" data-driver="${d.id}">
+          ${inside.length === 0 ? '<div class="driver-board-empty">Drop enablers here</div>' : ""}
+        </div>
+      `;
+
+      const cardsBox = board.querySelector(".driver-board-cards");
+      if (inside.length > 0) {
+        inside.forEach(e => cardsBox.appendChild(makeEnablerCard(e)));
+      }
+
+      // Drop zone
+      board.addEventListener("dragover", ev => {
+        ev.preventDefault();
+        board.classList.add("drag-over");
+      });
+      board.addEventListener("dragleave", () => board.classList.remove("drag-over"));
+      board.addEventListener("drop", ev => {
+        ev.preventDefault();
+        board.classList.remove("drag-over");
+        const id = ev.dataTransfer.getData("text/enabler-id");
+        const en = state.enablers.find(x => x.id === id);
+        if (en) {
+          en.driverId = d.id;
+          renderCluster();
+          renderStepNav();
+        }
+      });
+
+      grid.appendChild(board);
+    });
+
+    // Add-driver button
+    const btn = document.createElement("button");
+    btn.className = "add-driver-btn";
+    btn.textContent = "+ Add a driver";
+    btn.onclick = () => {
+      state.drivers.push({
+        id: uid(),
+        name: "",
+        meaning: "",
+        colorIdx: state.drivers.length
+      });
+      renderCluster();
+      renderStepNav();
+      // Focus the new driver name
+      setTimeout(() => {
+        const names = document.querySelectorAll(".driver-board-name");
+        const last = names[names.length - 1];
+        if (last) {
+          last.focus();
+          const r = document.createRange();
+          r.selectNodeContents(last);
+          r.collapse(false);
+          const s = window.getSelection();
+          s.removeAllRanges(); s.addRange(r);
+        }
+      }, 30);
+    };
+    grid.appendChild(btn);
+
+    // Also wire the unassigned column as a drop target (to remove enabler from cluster)
+    const uncol = document.querySelector(".unassigned-col");
+    uncol.ondragover = (ev) => { ev.preventDefault(); };
+    uncol.ondrop = (ev) => {
+      ev.preventDefault();
+      const id = ev.dataTransfer.getData("text/enabler-id");
+      const en = state.enablers.find(x => x.id === id);
+      if (en) { en.driverId = null; renderCluster(); renderStepNav(); }
+    };
+  }
+
+  // Edit driver name and remove driver
+  document.getElementById("driver-grid").addEventListener("input", e => {
+    if (e.target.classList.contains("driver-board-name")) {
+      const d = state.drivers.find(x => x.id === e.target.dataset.id);
+      if (d) { d.name = e.target.textContent; renderStepNav(); }
+    }
+  });
+  document.getElementById("driver-grid").addEventListener("click", e => {
+    if (e.target.classList.contains("driver-board-remove")) {
+      const id = e.target.dataset.id;
+      // Release enablers back to unassigned
+      state.enablers.forEach(en => { if (en.driverId === id) en.driverId = null; });
+      state.drivers = state.drivers.filter(d => d.id !== id);
+      renderCluster();
+      renderStepNav();
+    }
+  });
+
+  // ========= STEP 3: DESCRIBE =========
+  function renderDescribe() {
+    const box = document.getElementById("describe-list");
+    box.innerHTML = "";
+    if (state.drivers.length === 0) {
+      box.innerHTML = `<div class="tip"><div class="tip-label">No drivers yet</div>
+        <div class="tip-body">Go back to step 2 to create drivers by dragging enablers into groups.</div></div>`;
+      return;
+    }
+    state.drivers.forEach((d, i) => {
+      const color = DRIVER_COLORS[d.colorIdx % DRIVER_COLORS.length];
+      const inside = state.enablers.filter(e => e.driverId === d.id);
+      const card = document.createElement("div");
+      card.className = "describe-card";
+      card.style.background = color;
+      card.innerHTML = `
+        <h3>Driver · ${String(i + 1).padStart(2, "0")}</h3>
+        <div class="dname">${escapeHTML(d.name || "Unnamed driver")}</div>
+        <label>What it means, for the user</label>
+        <textarea data-id="${d.id}" placeholder="e.g. Easy access to the right parts and services when customers need them.">${escapeHTML(d.meaning || "")}</textarea>
+        ${inside.length ? `<div class="enabler-summary">${inside.map(e => `<span class="enabler-chip">${escapeHTML(e.name)}</span>`).join("")}</div>` : ""}
+      `;
+      box.appendChild(card);
+    });
+  }
+
+  document.getElementById("describe-list").addEventListener("input", e => {
+    if (e.target.tagName === "TEXTAREA") {
+      const d = state.drivers.find(x => x.id === e.target.dataset.id);
+      if (d) { d.meaning = e.target.value; renderStepNav(); }
+    }
+  });
+
+  // ========= STEP 4: COMPOSE =========
+  function renderCompose() {
+    document.getElementById("vp-product").value = state.vp.product || "";
+    document.getElementById("vp-audience").value = state.vp.audience || "";
+    document.getElementById("vp-outcome").value = state.vp.outcome || "";
+    document.getElementById("vp-benefit").value = state.vp.benefit || "";
+
+    // Drivers auto-joined
+    const driverNames = state.drivers
+      .map(d => d.name.trim())
+      .filter(Boolean);
+    document.getElementById("vp-drivers").value = joinDrivers(driverNames);
+
+    renderPreview();
+  }
+
+  function joinDrivers(list) {
+    if (list.length === 0) return "";
+    if (list.length === 1) return list[0];
+    if (list.length === 2) return list.join(" and ");
+    return list.slice(0, -1).join(", ") + ", and " + list[list.length - 1];
+  }
+
+  function renderPreview() {
+    const p = state.vp;
+    const drivers = joinDrivers(state.drivers.map(d => d.name.trim()).filter(Boolean));
+
+    const slot = (v, placeholder) => v && v.trim()
+      ? `<span class="slot">${escapeHTML(v.trim())}</span>`
+      : `<span class="placeholder">${escapeHTML(placeholder)}</span>`;
+
+    const html = `${slot(p.product, "[product]")} helps ${slot(p.audience, "[audience]")} ${slot(p.outcome, "[primary outcome]")} through ${slot(drivers, "[your drivers]")}, ${slot(p.benefit, "[larger benefit]")}.`;
+
+    document.getElementById("vp-preview").innerHTML = html;
+  }
+
+  ["vp-product", "vp-audience", "vp-outcome", "vp-benefit"].forEach(id => {
+    document.addEventListener("input", ev => {
+      if (ev.target.id === id) {
+        const field = id.replace("vp-", "");
+        state.vp[field] = ev.target.value;
+        renderPreview();
+        renderStepNav();
+      }
+    });
+  });
+
+  // ========= STEP 5: REVIEW =========
+  function renderReview() {
+    // Build statement plain text (no slots or placeholders)
+    const p = state.vp;
+    const drivers = joinDrivers(state.drivers.map(d => d.name.trim()).filter(Boolean));
+    const filled = {
+      product: p.product.trim() || "[Product]",
+      audience: p.audience.trim() || "[audience]",
+      outcome: p.outcome.trim() || "[primary outcome]",
+      drivers: drivers || "[drivers]",
+      benefit: p.benefit.trim() || "[larger benefit]"
+    };
+    const vpHtml = `<span class="highlight">${escapeHTML(filled.product)}</span> helps ${escapeHTML(filled.audience)} <span class="highlight">${escapeHTML(filled.outcome)}</span> through <span class="highlight">${escapeHTML(filled.drivers)}</span>, ${escapeHTML(filled.benefit)}.`;
+    document.getElementById("review-vp-text").innerHTML = vpHtml;
+
+    // Drivers
+    const box = document.getElementById("review-drivers");
+    box.innerHTML = "";
+    state.drivers.forEach((d, i) => {
+      const color = DRIVER_COLORS[d.colorIdx % DRIVER_COLORS.length];
+      const inside = state.enablers.filter(e => e.driverId === d.id);
+      const card = document.createElement("div");
+      card.className = "review-driver";
+      card.style.background = color;
+      card.innerHTML = `
+        <div class="num">Driver · ${String(i + 1).padStart(2, "0")}</div>
+        <h3>${escapeHTML(d.name || "Unnamed driver")}</h3>
+        <div class="meaning">${escapeHTML(d.meaning || "Describe what this driver means for the user in step 3.")}</div>
+        ${inside.length ? `
+          <div class="enablers-label">Enablers</div>
+          <ul>${inside.map(e => `<li>${escapeHTML(e.name)}</li>`).join("")}</ul>
+        ` : ""}
+      `;
+      box.appendChild(card);
+    });
+  }
+
+  // ========= CURRENT STEP RENDER =========
+  function renderCurrentStep() {
+    if (state.step === 1) renderEnablers();
+    else if (state.step === 2) renderCluster();
+    else if (state.step === 3) renderDescribe();
+    else if (state.step === 4) renderCompose();
+    else if (state.step === 5) renderReview();
+  }
+
+  // ========= EXAMPLE / RESET =========
+  function loadExample() {
+    state = newState();
+    // Spotify example, designed to show the bottom-up flow on a familiar consumer service
+    const eIds = [uid(), uid(), uid(), uid(), uid(), uid(), uid(), uid(), uid(), uid(), uid(), uid()];
+    state.enablers = [
+      { id: eIds[0],  name: "Daily Mix playlists",        description: "Auto-curated, refreshed every morning",      driverId: null },
+      { id: eIds[1],  name: "Discover Weekly",            description: "Personalised playlist based on listening",    driverId: null },
+      { id: eIds[2],  name: "Year-end Wrapped",           description: "Annual personalised listening recap",         driverId: null },
+      { id: eIds[3],  name: "Genre-based recommenders",   description: "Surface adjacent artists and tracks",         driverId: null },
+      { id: eIds[4],  name: "Collaborative playlists",    description: "Multi-user playlist editing",                  driverId: null },
+      { id: eIds[5],  name: "Friend activity feed",       description: "See what people you follow are listening to", driverId: null },
+      { id: eIds[6],  name: "Share to social",            description: "One-tap share of song, playlist, or Wrapped", driverId: null },
+      { id: eIds[7],  name: "Group sessions / Jam",       description: "Listen together in real time across devices", driverId: null },
+      { id: eIds[8],  name: "Offline downloads",          description: "Save tracks for when there's no signal",      driverId: null },
+      { id: eIds[9],  name: "Cross-device handoff",       description: "Pause on phone, resume on speaker",            driverId: null },
+      { id: eIds[10], name: "Smart-speaker integration",  description: "Voice control on home devices",                driverId: null },
+      { id: eIds[11], name: "Curated editorial playlists",description: "Hand-picked by music editors and tastemakers", driverId: null }
+    ];
+    const dIds = [uid(), uid(), uid(), uid()];
+    state.drivers = [
+      { id: dIds[0], name: "Music tuned to who you are",      meaning: "Recommendations and recaps that learn from listening behaviour and reflect taste back to the user, making the service feel like it was made for them alone.",       colorIdx: 0 },
+      { id: dIds[1], name: "Listening that's social",         meaning: "Features that turn solitary listening into shared moments with friends, partners, and the wider community, deepening the everyday emotional pull of music.",      colorIdx: 1 },
+      { id: dIds[2], name: "Always-on access, anywhere",      meaning: "Reliable playback across devices, offline, and at home, so the music follows the listener through the day without breaks or friction.",                            colorIdx: 2 },
+      { id: dIds[3], name: "Discovery that feels effortless", meaning: "A constant supply of new music, surfaced through a mix of algorithmic and human curation, so users always have something fresh to come back to.",                  colorIdx: 3 }
+    ];
+    // Music tuned to who you are
+    state.enablers[0].driverId = dIds[0];   // Daily Mix
+    state.enablers[1].driverId = dIds[0];   // Discover Weekly
+    state.enablers[2].driverId = dIds[0];   // Wrapped
+    // Listening that's social
+    state.enablers[4].driverId = dIds[1];   // Collaborative playlists
+    state.enablers[5].driverId = dIds[1];   // Friend activity feed
+    state.enablers[6].driverId = dIds[1];   // Share to social
+    state.enablers[7].driverId = dIds[1];   // Group sessions
+    // Always-on access
+    state.enablers[8].driverId = dIds[2];   // Offline downloads
+    state.enablers[9].driverId = dIds[2];   // Cross-device handoff
+    state.enablers[10].driverId = dIds[2];  // Smart-speaker integration
+    // Discovery that feels effortless
+    state.enablers[3].driverId = dIds[3];   // Genre-based recommenders
+    state.enablers[11].driverId = dIds[3];  // Curated editorial playlists
+
+    state.vp = {
+      product: "Spotify",
+      audience: "everyday listeners",
+      outcome: "make music feel personal and shareable",
+      benefit: "turning a daily habit into part of who they are"
+    };
+    renderCurrentStep();
+    renderStepNav();
+  }
+
+  document.getElementById("load-example").onclick = () => {
+    if (state.enablers.length > 0 || state.drivers.length > 0) {
+      if (!confirm("This will replace your current work with a worked example. Continue?")) return;
+    }
+    loadExample();
+  };
+  document.getElementById("reset-all").onclick = () => {
+    if (state.enablers.length === 0 && state.drivers.length === 0) return;
+    if (!confirm("Clear everything and start from scratch?")) return;
+    state = newState();
+    goToStep(1);
+  };
+  document.getElementById("print-btn").onclick = () => {
+    if (state.step !== 5) goToStep(5);
+    setTimeout(() => window.print(), 150);
+  };
+
+  // ========= BOOT =========
+  setView("home");
+  renderStepNav();
+  renderCurrentStep();
+  updateNavButtons();
+</script>
+
+</body>
+</html>
