@@ -1,0 +1,2694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Signals & Trends · STEEP</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600;1,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F2EEE4;
+    --paper: #FBF8F0;
+    --ink: #1A1714;
+    --ink-sec: #6A655E;
+    --ink-ter: #A39C90;
+    --ink-fade: #C7C1B4;
+    --accent: #1F47D9;
+    --accent-soft: #D6DEF7;
+    --accent-faint: #ECF0FB;
+    --hairline: #D9D3C3;
+
+    /* STEEP category colors, soft pastels matching the warm palette */
+    --steep-social: #F4D4D8;
+    --steep-tech: #D2E5EE;
+    --steep-economic: #F4E5C5;
+    --steep-environmental: #D8E5D0;
+    --steep-political: #E5D5E8;
+
+    --steep-social-ink: #813948;
+    --steep-tech-ink: #2A4F62;
+    --steep-economic-ink: #6B5418;
+    --steep-environmental-ink: #3F5C2D;
+    --steep-political-ink: #523F5A;
+
+    --font-ui: 'Instrument Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono: 'JetBrains Mono', 'SF Mono', 'Menlo', monospace;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-ui);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100%;
+    overflow-x: hidden;
+    line-height: 1.4;
+  }
+
+  body {
+    background-image:
+      radial-gradient(circle at 20% 10%, rgba(31, 71, 217, 0.04), transparent 40%),
+      radial-gradient(circle at 80% 90%, rgba(26, 23, 20, 0.03), transparent 40%);
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.35;
+    z-index: 1;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.1 0 0 0 0 0.09 0 0 0 0 0.08 0 0 0 0.08 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  }
+
+  /* ===== TOP BAR ===== */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 20px 40px 18px;
+    border-bottom: 1px solid var(--hairline);
+    position: relative;
+    z-index: 10;
+    background: var(--bg);
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    flex-shrink: 0;
+  }
+
+  .brand {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+  }
+  .brand-mark {
+    font-family: var(--font-ui);
+    font-weight: 600;
+    font-size: 20px;
+    letter-spacing: -0.015em;
+    color: var(--ink);
+  }
+  .brand-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+    font-weight: 500;
+  }
+
+  #back-to-intro {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 9px 12px;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink-sec);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+  #back-to-intro:hover { color: var(--ink); border-color: var(--ink); }
+
+  .step-nav {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  .step-btn {
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 9px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.18s ease;
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    letter-spacing: -0.005em;
+  }
+  .step-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .step-btn.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .step-btn .num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-ter);
+    font-weight: 500;
+  }
+  .step-btn.active .num { color: var(--accent-soft); }
+  .step-btn.complete .num { color: var(--accent); }
+  .step-btn.active.complete .num { color: var(--accent-soft); }
+
+  .controls {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  .ctrl-btn {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 10px 12px;
+    border: 1px solid var(--hairline);
+    background: var(--paper);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ctrl-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .ctrl-btn.has-ai {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .ctrl-btn.has-ai:hover {
+    background: var(--accent);
+    color: var(--paper);
+  }
+
+  /* View switching */
+  body.home-view .step-nav,
+  body.home-view .controls,
+  body.home-view #back-to-intro,
+  body.home-view #builder-view { display: none !important; }
+  body.builder-view #home-view { display: none !important; }
+
+  /* ============================================ */
+  /* ===== HOME VIEW                          ===== */
+  /* ============================================ */
+
+  #home-view { position: relative; z-index: 2; }
+
+  .home-hero {
+    padding: 90px 40px 90px;
+    max-width: 1500px;
+  }
+  .home-hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 36px;
+    font-weight: 500;
+  }
+  .home-hero h1 {
+    font-size: clamp(72px, 10.5vw, 180px);
+    line-height: 0.92;
+    letter-spacing: -0.045em;
+    font-weight: 600;
+    margin-bottom: 40px;
+    color: var(--ink);
+  }
+  .home-hero h1 em {
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .home-hero-lede {
+    font-size: clamp(22px, 2.3vw, 32px);
+    line-height: 1.3;
+    color: var(--ink-sec);
+    max-width: 840px;
+    margin-bottom: 48px;
+    font-weight: 400;
+    letter-spacing: -0.01em;
+  }
+  .home-cta {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .btn-primary, .btn-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 16px 22px;
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: transform 0.15s ease, background 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+  }
+  .btn-primary {
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+  }
+  .btn-primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+    transform: translateY(-1px);
+  }
+  .btn-secondary {
+    background: transparent;
+    color: var(--ink);
+    border: 1px solid var(--ink);
+  }
+  .btn-secondary:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+
+  .home-section {
+    padding: 90px 40px 100px;
+    border-top: 1px solid var(--hairline);
+    max-width: 1500px;
+  }
+  .home-section-num {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .home-section h2 {
+    font-size: clamp(44px, 5.6vw, 82px);
+    line-height: 1;
+    letter-spacing: -0.035em;
+    font-weight: 600;
+    margin-bottom: 34px;
+    max-width: 1200px;
+    color: var(--ink);
+  }
+  .home-section h2 em { font-style: italic; color: var(--accent); }
+  .home-section p.lede {
+    font-size: clamp(20px, 2vw, 26px);
+    line-height: 1.35;
+    color: var(--ink);
+    max-width: 900px;
+    margin-bottom: 18px;
+    font-weight: 400;
+    letter-spacing: -0.008em;
+  }
+  .home-section p.body {
+    font-size: 17px;
+    line-height: 1.6;
+    color: var(--ink-sec);
+    max-width: 760px;
+    margin-bottom: 16px;
+  }
+  .home-section p.body strong { color: var(--ink); font-weight: 500; }
+
+  /* STEEP grid on the homepage */
+  .steep-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin-top: 48px;
+    max-width: 1200px;
+  }
+  .steep-cell {
+    padding: 32px 22px 30px;
+    border-radius: 2px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+  }
+  .steep-cell .letter {
+    font-family: var(--font-ui);
+    font-size: 56px;
+    font-weight: 600;
+    line-height: 0.9;
+    letter-spacing: -0.04em;
+    margin-bottom: 14px;
+  }
+  .steep-cell .name {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    font-weight: 500;
+  }
+  .steep-cell p {
+    font-size: 13.5px;
+    line-height: 1.45;
+    margin: 0;
+  }
+
+  .steep-cell.social { background: var(--steep-social); color: var(--steep-social-ink); }
+  .steep-cell.tech { background: var(--steep-tech); color: var(--steep-tech-ink); }
+  .steep-cell.economic { background: var(--steep-economic); color: var(--steep-economic-ink); }
+  .steep-cell.environmental { background: var(--steep-environmental); color: var(--steep-environmental-ink); }
+  .steep-cell.political { background: var(--steep-political); color: var(--steep-political-ink); }
+
+  /* Three trend statement shapes */
+  .shapes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+    max-width: 1300px;
+  }
+  .shape-card {
+    padding: 32px 28px 36px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    border-top: 4px solid var(--accent);
+  }
+  .shape-card .label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 14px;
+  }
+  .shape-card h4 {
+    font-size: 26px;
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.018em;
+    margin-bottom: 14px;
+    color: var(--ink);
+  }
+  .shape-card p {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--ink-sec);
+    margin-bottom: 14px;
+  }
+  .shape-card .example {
+    font-style: italic;
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+    padding-top: 14px;
+    border-top: 1px dashed var(--hairline);
+  }
+
+  .home-footer {
+    padding: 28px 40px;
+    border-top: 1px solid var(--hairline);
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  /* ============================================ */
+  /* ===== BUILDER VIEW                        === */
+  /* ============================================ */
+
+  #builder-view {
+    position: relative;
+    z-index: 2;
+    padding: 48px 40px 120px;
+    max-width: 1500px;
+  }
+
+  .step-panel { display: none; }
+  .step-panel.active { display: block; }
+
+  .step-header {
+    margin-bottom: 36px;
+    max-width: 1100px;
+  }
+  .step-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 16px;
+    font-weight: 500;
+  }
+  .step-title {
+    font-size: clamp(38px, 4.4vw, 60px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.02;
+    margin-bottom: 20px;
+    color: var(--ink);
+  }
+  .step-title em { font-style: italic; color: var(--accent); }
+  .step-body {
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--ink-sec);
+    max-width: 780px;
+    margin-bottom: 10px;
+  }
+  .step-body strong { color: var(--ink); font-weight: 500; }
+
+  .tip {
+    background: var(--accent-faint);
+    border-left: 3px solid var(--accent);
+    padding: 14px 18px;
+    margin: 20px 0 24px;
+    border-radius: 2px;
+    max-width: 900px;
+  }
+  .tip-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .tip-body {
+    font-size: 14.5px;
+    line-height: 1.5;
+    color: var(--ink);
+  }
+
+  /* ===== STEP 0: PROJECT SETUP ===== */
+  .project-form {
+    display: grid;
+    gap: 22px;
+    max-width: 800px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 32px;
+    border-radius: 2px;
+  }
+  .project-form .field label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .project-form input, .project-form select, .project-form textarea {
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: 16px;
+    padding: 13px 16px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .project-form input:focus, .project-form select:focus, .project-form textarea:focus {
+    border-color: var(--accent);
+  }
+  .project-form input::placeholder, .project-form textarea::placeholder {
+    color: var(--ink-ter);
+    font-style: italic;
+  }
+  .project-form .helper {
+    font-size: 13px;
+    color: var(--ink-ter);
+    margin-top: 6px;
+    line-height: 1.45;
+  }
+
+  /* ===== STEP 1: SIGNALS ===== */
+  .signal-form {
+    display: grid;
+    grid-template-columns: 140px 1fr 1.4fr auto;
+    gap: 8px;
+    padding: 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+    margin-bottom: 16px;
+    max-width: 1200px;
+  }
+  .signal-form input, .signal-form select {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    padding: 11px 13px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+  }
+  .signal-form input:focus, .signal-form select:focus { border-color: var(--accent); }
+  .signal-form input::placeholder { color: var(--ink-ter); }
+  .signal-form button {
+    font-family: var(--font-ui);
+    font-size: 13.5px;
+    font-weight: 500;
+    padding: 11px 20px;
+    background: var(--ink);
+    color: var(--paper);
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .signal-form button:hover { background: var(--accent); }
+
+  .signal-form-extra {
+    margin-bottom: 22px;
+    max-width: 1200px;
+  }
+  .signal-form-extra-row {
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 8px;
+    padding: 0 16px 16px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-top: none;
+    border-radius: 0 0 2px 2px;
+    margin-top: -16px;
+  }
+  .signal-form-extra-row input {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    padding: 11px 13px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+  }
+  .signal-form-extra-row input:focus { border-color: var(--accent); }
+  .signal-form-extra-row input::placeholder { color: var(--ink-ter); font-style: italic; }
+
+  .signals-list {
+    display: grid;
+    gap: 8px;
+    max-width: 1200px;
+  }
+  .signal-row {
+    display: grid;
+    grid-template-columns: 90px 220px 1fr auto auto;
+    gap: 12px;
+    padding: 14px 16px;
+    border-radius: 2px;
+    align-items: flex-start;
+    transition: border-color 0.15s ease;
+  }
+  .signal-row.social { background: var(--steep-social); }
+  .signal-row.tech { background: var(--steep-tech); }
+  .signal-row.economic { background: var(--steep-economic); }
+  .signal-row.environmental { background: var(--steep-environmental); }
+  .signal-row.political { background: var(--steep-political); }
+
+  .signal-row .tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 5px 8px;
+    background: rgba(255,255,255,0.5);
+    border-radius: 2px;
+    text-align: center;
+    align-self: flex-start;
+  }
+  .signal-row.social .tag { color: var(--steep-social-ink); }
+  .signal-row.tech .tag { color: var(--steep-tech-ink); }
+  .signal-row.economic .tag { color: var(--steep-economic-ink); }
+  .signal-row.environmental .tag { color: var(--steep-environmental-ink); }
+  .signal-row.political .tag { color: var(--steep-political-ink); }
+
+  .signal-row .title {
+    font-size: 14.5px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.35;
+    padding: 3px 0;
+    outline: none;
+    word-break: break-word;
+  }
+  .signal-row .summary {
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.4;
+    padding: 4px 0;
+    outline: none;
+  }
+  .signal-row .why {
+    font-size: 12.5px;
+    line-height: 1.4;
+    color: var(--ink-sec);
+    margin-top: 6px;
+    padding: 4px 0;
+    outline: none;
+  }
+  .signal-row .why:empty::before {
+    content: attr(data-placeholder);
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+  .signal-row [contenteditable]:focus {
+    background: rgba(255,255,255,0.85);
+    padding: 4px 8px;
+    margin: -1px -4px;
+  }
+  .signal-row .summary-wrap {
+    display: flex;
+    flex-direction: column;
+  }
+  .signal-row .source-link {
+    font-size: 11.5px;
+    color: var(--ink-sec);
+    margin-top: 6px;
+    text-decoration: none;
+    word-break: break-all;
+    font-family: var(--font-mono);
+  }
+  .signal-row .source-link:hover { color: var(--accent); }
+  .signal-row .signal-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    color: var(--ink-sec);
+    font-weight: 500;
+    text-align: right;
+    align-self: flex-start;
+    padding-top: 4px;
+  }
+  .signal-row .remove {
+    width: 24px;
+    height: 24px;
+    border: none;
+    background: rgba(255,255,255,0.5);
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 50%;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    align-self: flex-start;
+    transition: all 0.15s ease;
+  }
+  .signal-row .remove:hover { background: var(--ink); color: var(--paper); }
+
+  .count-status {
+    margin-top: 18px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+  }
+  .count-status.ok { color: var(--accent); }
+  .count-status .breakdown {
+    margin-left: 14px;
+    color: var(--ink-fade);
+  }
+
+  /* ===== STEP 2: PICK THREE ===== */
+  .pick-info {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  .pick-counter {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    padding: 8px 14px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    font-weight: 500;
+  }
+  .pick-counter.ready {
+    background: var(--accent);
+    color: var(--paper);
+    border-color: var(--accent);
+  }
+  .category-spread {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+  }
+  .category-spread.warn { color: var(--steep-economic-ink); }
+  .category-spread.ok { color: var(--steep-environmental-ink); }
+
+  .pick-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 12px;
+    max-width: 1300px;
+  }
+  .pick-card {
+    padding: 18px 20px 22px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    position: relative;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+  }
+  .pick-card.social { background: var(--steep-social); }
+  .pick-card.tech { background: var(--steep-tech); }
+  .pick-card.economic { background: var(--steep-economic); }
+  .pick-card.environmental { background: var(--steep-environmental); }
+  .pick-card.political { background: var(--steep-political); }
+
+  .pick-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(26, 23, 20, 0.08);
+  }
+  .pick-card.selected {
+    border-color: var(--ink);
+    box-shadow: 0 0 0 4px var(--accent-faint);
+  }
+  .pick-card .pick-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .pick-card.social .pick-tag { color: var(--steep-social-ink); }
+  .pick-card.tech .pick-tag { color: var(--steep-tech-ink); }
+  .pick-card.economic .pick-tag { color: var(--steep-economic-ink); }
+  .pick-card.environmental .pick-tag { color: var(--steep-environmental-ink); }
+  .pick-card.political .pick-tag { color: var(--steep-political-ink); }
+
+  .pick-card .pick-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    margin-bottom: 10px;
+    letter-spacing: -0.01em;
+  }
+  .pick-card .pick-summary {
+    font-size: 13.5px;
+    color: var(--ink);
+    line-height: 1.4;
+    margin-bottom: 8px;
+  }
+  .pick-card .pick-check {
+    position: absolute;
+    top: 14px;
+    right: 14px;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    border: 1px solid rgba(0,0,0,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+  }
+  .pick-card.selected .pick-check {
+    background: var(--ink);
+    border-color: var(--ink);
+  }
+  .pick-card.selected .pick-check::before {
+    content: "✓";
+    color: var(--paper);
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .why-three {
+    margin-top: 30px;
+    max-width: 900px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 24px;
+    border-radius: 2px;
+  }
+  .why-three label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .why-three textarea {
+    width: 100%;
+    min-height: 90px;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s ease;
+  }
+  .why-three textarea:focus { border-color: var(--accent); }
+  .why-three textarea::placeholder { color: var(--ink-ter); font-style: italic; }
+  .why-three .helper {
+    font-size: 12.5px;
+    color: var(--ink-ter);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+  .why-three .char-count {
+    font-family: var(--font-mono);
+    font-weight: 500;
+  }
+  .why-three .char-count.ok { color: var(--accent); }
+
+  /* ===== STEP 3: ARTICULATE ===== */
+  .articulate-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 32px;
+    align-items: flex-start;
+  }
+  .articulate-fields {
+    display: grid;
+    gap: 22px;
+  }
+  .field-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 22px 24px;
+    border-radius: 2px;
+  }
+  .field-card .field-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .field-card .field-label {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 4px;
+    letter-spacing: -0.01em;
+  }
+  .field-card .field-helper {
+    font-size: 13px;
+    color: var(--ink-ter);
+    margin-bottom: 14px;
+    line-height: 1.45;
+  }
+  .field-card textarea {
+    width: 100%;
+    font-family: var(--font-ui);
+    font-size: 15px;
+    line-height: 1.5;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    min-height: 60px;
+    transition: border-color 0.15s ease;
+  }
+  .field-card textarea:focus { border-color: var(--accent); }
+  .field-card textarea::placeholder { color: var(--ink-ter); font-style: italic; }
+
+  .draft-panel {
+    position: sticky;
+    top: 20px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 30px 32px 36px;
+    border-radius: 2px;
+    border-left: 4px solid var(--accent);
+  }
+  .draft-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 16px;
+  }
+  .draft-text {
+    font-size: 22px;
+    line-height: 1.32;
+    color: var(--ink);
+    font-weight: 500;
+    letter-spacing: -0.012em;
+    margin-bottom: 22px;
+  }
+  .draft-text .slot {
+    color: var(--accent);
+    font-weight: 500;
+  }
+  .draft-text .placeholder {
+    color: var(--ink-fade);
+    font-style: italic;
+    font-weight: 400;
+    border-bottom: 1px dashed var(--ink-fade);
+    padding-bottom: 1px;
+  }
+
+  .shape-toggle {
+    margin-top: 16px;
+    padding-top: 22px;
+    border-top: 1px dashed var(--hairline);
+  }
+  .shape-toggle-label {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 12px;
+  }
+  .shape-options {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+  }
+  .shape-option {
+    font-family: var(--font-ui);
+    font-size: 12.5px;
+    font-weight: 500;
+    padding: 8px 12px;
+    background: transparent;
+    border: 1px solid var(--hairline);
+    color: var(--ink-sec);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .shape-option:hover { border-color: var(--ink); color: var(--ink); }
+  .shape-option.active {
+    background: var(--ink);
+    color: var(--paper);
+    border-color: var(--ink);
+  }
+  .shape-option-helper {
+    font-size: 12px;
+    color: var(--ink-ter);
+    line-height: 1.45;
+    font-style: italic;
+  }
+
+  .final-statement {
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--hairline);
+  }
+  .final-statement label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 10px;
+  }
+  .final-statement textarea {
+    width: 100%;
+    min-height: 110px;
+    font-family: var(--font-ui);
+    font-size: 17px;
+    line-height: 1.45;
+    padding: 14px 16px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    font-weight: 500;
+    letter-spacing: -0.005em;
+    transition: border-color 0.15s ease;
+  }
+  .final-statement textarea:focus { border-color: var(--accent); }
+  .final-statement textarea::placeholder { color: var(--ink-ter); font-style: italic; font-weight: 400; }
+  .final-statement .helper {
+    font-size: 12.5px;
+    color: var(--ink-ter);
+    margin-top: 8px;
+    line-height: 1.4;
+  }
+
+  /* ===== STEP 4: PRESSURE TEST ===== */
+  .pt-statement {
+    background: var(--accent-faint);
+    border-left: 3px solid var(--accent);
+    padding: 22px 26px;
+    margin-bottom: 36px;
+    border-radius: 2px;
+    max-width: 1100px;
+  }
+  .pt-statement-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .pt-statement-text {
+    font-size: 19px;
+    line-height: 1.4;
+    font-weight: 500;
+    color: var(--ink);
+    letter-spacing: -0.01em;
+  }
+
+  .pt-list {
+    display: grid;
+    gap: 18px;
+    max-width: 1100px;
+  }
+  .pt-card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 22px 26px;
+    border-radius: 2px;
+  }
+  .pt-card.ai {
+    border-color: var(--accent);
+    border-left: 3px solid var(--accent);
+  }
+  .pt-card .pt-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .pt-card.ai .pt-num { color: var(--accent); }
+  .pt-card .pt-question {
+    font-size: 19px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-bottom: 14px;
+  }
+  .pt-card textarea {
+    width: 100%;
+    min-height: 80px;
+    font-family: var(--font-ui);
+    font-size: 14.5px;
+    line-height: 1.55;
+    padding: 12px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    resize: vertical;
+    transition: border-color 0.15s ease;
+  }
+  .pt-card textarea:focus { border-color: var(--accent); }
+  .pt-card textarea::placeholder { color: var(--ink-ter); font-style: italic; }
+
+  .ai-section {
+    margin-top: 48px;
+    max-width: 1100px;
+    padding-top: 28px;
+    border-top: 1px dashed var(--hairline);
+  }
+
+  .ai-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 0;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    transition: color 0.15s ease;
+  }
+  .ai-toggle:hover { color: var(--ink); }
+  .ai-toggle .chev {
+    display: inline-block;
+    transition: transform 0.2s ease;
+    font-size: 10px;
+  }
+  .ai-toggle.open .chev { transform: rotate(90deg); }
+
+  .ai-panel {
+    display: none;
+    margin-top: 18px;
+    padding: 22px 26px 26px;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 2px;
+  }
+  .ai-panel.open { display: block; }
+
+  .ai-panel h3 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.25;
+    letter-spacing: -0.012em;
+    margin-bottom: 8px;
+  }
+  .ai-panel p {
+    font-size: 14px;
+    line-height: 1.55;
+    color: var(--ink-sec);
+    margin-bottom: 12px;
+    max-width: 760px;
+  }
+  .ai-panel p strong { color: var(--ink); font-weight: 500; }
+  .ai-panel p.note {
+    font-size: 12.5px;
+    background: var(--accent-faint);
+    padding: 10px 14px;
+    border-radius: 2px;
+    color: var(--ink);
+    border-left: 2px solid var(--accent);
+  }
+  .ai-panel-actions {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+  .ai-panel button {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 16px;
+    background: var(--ink);
+    color: var(--paper);
+    border: 1px solid var(--ink);
+    border-radius: 2px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .ai-panel button:hover { background: var(--accent); border-color: var(--accent); }
+  .ai-panel button.outline {
+    background: transparent;
+    color: var(--ink);
+  }
+  .ai-panel button.outline:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .ai-panel button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .ai-key-form {
+    display: none;
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 22px 26px;
+    border-radius: 2px;
+    margin-top: 12px;
+  }
+  .ai-key-form.open { display: block; }
+  .ai-key-form label {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+  .ai-key-form input {
+    width: 100%;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    padding: 11px 14px;
+    border: 1px solid var(--hairline);
+    background: var(--bg);
+    color: var(--ink);
+    border-radius: 2px;
+    outline: none;
+    transition: border-color 0.15s ease;
+    margin-bottom: 12px;
+  }
+  .ai-key-form input:focus { border-color: var(--accent); }
+  .ai-key-form .helper {
+    font-size: 12.5px;
+    color: var(--ink-sec);
+    line-height: 1.5;
+    margin-bottom: 12px;
+  }
+  .ai-key-form .helper a {
+    color: var(--accent);
+    text-decoration: underline;
+  }
+  .ai-key-form .key-actions {
+    display: flex;
+    gap: 6px;
+  }
+  .ai-key-form button {
+    font-family: var(--font-ui);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 2px;
+    cursor: pointer;
+    border: 1px solid var(--ink);
+    background: var(--ink);
+    color: var(--paper);
+    transition: all 0.15s ease;
+  }
+  .ai-key-form button:hover { background: var(--accent); border-color: var(--accent); }
+  .ai-key-form button.outline {
+    background: transparent;
+    color: var(--ink);
+  }
+  .ai-key-form button.outline:hover { background: var(--ink); color: var(--paper); }
+
+  .ai-status {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ink-ter);
+    margin-top: 14px;
+  }
+  .ai-status.error { color: #B92F2F; }
+  .ai-status.success { color: var(--accent); }
+  .ai-status.loading { color: var(--accent); }
+
+  /* ===== STEP 5: REVIEW ===== */
+  .review-panel {
+    max-width: 1300px;
+  }
+  .review-header {
+    margin-bottom: 36px;
+    padding-bottom: 22px;
+    border-bottom: 1px solid var(--hairline);
+  }
+  .review-project {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    margin-bottom: 8px;
+    font-weight: 500;
+  }
+  .review-question {
+    font-size: 18px;
+    color: var(--ink);
+    line-height: 1.4;
+    font-weight: 500;
+    max-width: 900px;
+  }
+  .review-question .horizon {
+    color: var(--accent);
+    font-style: italic;
+  }
+
+  .review-statement {
+    background: var(--accent-faint);
+    padding: 44px 44px 48px;
+    border-radius: 2px;
+    border-left: 5px solid var(--accent);
+    margin-bottom: 48px;
+  }
+  .review-statement-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 18px;
+  }
+  .review-statement-text {
+    font-size: clamp(28px, 3vw, 42px);
+    line-height: 1.18;
+    font-weight: 600;
+    color: var(--ink);
+    letter-spacing: -0.025em;
+    max-width: 1150px;
+  }
+
+  .review-section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--ink-sec);
+    margin-bottom: 18px;
+    font-weight: 500;
+  }
+  .review-signals {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    margin-bottom: 56px;
+  }
+  .review-signal {
+    padding: 26px 24px 28px;
+    border-radius: 2px;
+    min-height: 220px;
+    display: flex;
+    flex-direction: column;
+  }
+  .review-signal.social { background: var(--steep-social); }
+  .review-signal.tech { background: var(--steep-tech); }
+  .review-signal.economic { background: var(--steep-economic); }
+  .review-signal.environmental { background: var(--steep-environmental); }
+  .review-signal.political { background: var(--steep-political); }
+
+  .review-signal .rs-tag {
+    font-family: var(--font-mono);
+    font-size: 9.5px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 14px;
+  }
+  .review-signal.social .rs-tag { color: var(--steep-social-ink); }
+  .review-signal.tech .rs-tag { color: var(--steep-tech-ink); }
+  .review-signal.economic .rs-tag { color: var(--steep-economic-ink); }
+  .review-signal.environmental .rs-tag { color: var(--steep-environmental-ink); }
+  .review-signal.political .rs-tag { color: var(--steep-political-ink); }
+
+  .review-signal h4 {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--ink);
+    line-height: 1.2;
+    letter-spacing: -0.012em;
+    margin-bottom: 12px;
+  }
+  .review-signal p.summary {
+    font-size: 14px;
+    color: var(--ink);
+    line-height: 1.45;
+    margin-bottom: 14px;
+  }
+  .review-signal a.source {
+    margin-top: auto;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-sec);
+    text-decoration: none;
+    word-break: break-all;
+    padding-top: 12px;
+    border-top: 1px dashed rgba(0,0,0,0.15);
+  }
+  .review-signal a.source:hover { color: var(--ink); text-decoration: underline; }
+
+  .review-test {
+    display: grid;
+    gap: 14px;
+    max-width: 1300px;
+  }
+  .review-test-item {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    padding: 22px 26px;
+    border-radius: 2px;
+  }
+  .review-test-item.ai {
+    border-left: 3px solid var(--accent);
+  }
+  .review-test-item .rt-q {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--ink);
+    margin-bottom: 8px;
+    letter-spacing: -0.005em;
+  }
+  .review-test-item .rt-q .ai-tag {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-left: 10px;
+    padding: 2px 7px;
+    background: var(--accent-faint);
+    border-radius: 2px;
+  }
+  .review-test-item .rt-a {
+    font-size: 14.5px;
+    color: var(--ink-sec);
+    line-height: 1.55;
+  }
+  .review-test-item .rt-a.empty {
+    color: var(--ink-fade);
+    font-style: italic;
+  }
+
+  /* ===== STEP FOOTER ===== */
+  .step-footer {
+    margin-top: 60px;
+    padding-top: 28px;
+    border-top: 1px solid var(--hairline);
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .step-footer .nav-btn {
+    font-family: var(--font-ui);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 14px 22px;
+    border: 1px solid var(--ink);
+    background: transparent;
+    color: var(--ink);
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.15s ease;
+  }
+  .step-footer .nav-btn:hover {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .step-footer .nav-btn.primary {
+    background: var(--ink);
+    color: var(--paper);
+  }
+  .step-footer .nav-btn.primary:hover {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .step-footer .nav-btn:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  /* ===== RESPONSIVE ===== */
+  @media (max-width: 1024px) {
+    .steep-grid { grid-template-columns: repeat(2, 1fr); }
+    .shapes-grid { grid-template-columns: 1fr; }
+    .articulate-layout { grid-template-columns: 1fr; }
+    .draft-panel { position: static; }
+    .review-signals { grid-template-columns: 1fr; }
+    .signal-form { grid-template-columns: 1fr; }
+    .signal-row { grid-template-columns: 1fr; }
+    .signal-row .summary-wrap { order: 2; }
+    .signal-form-extra-row { grid-template-columns: 1fr; }
+    .topbar { flex-wrap: wrap; }
+    .step-nav { order: 3; width: 100%; justify-content: flex-start; }
+  }
+  @media (max-width: 720px) {
+    .topbar { padding: 14px 20px; }
+    .home-hero { padding: 50px 20px 60px; }
+    .home-section { padding: 60px 20px 70px; }
+    #builder-view { padding: 32px 20px 80px; }
+    .steep-grid { grid-template-columns: 1fr; }
+  }
+
+  /* ===== PRINT ===== */
+  @media print {
+    @page { size: A4 landscape; margin: 12mm; }
+    body::before, .topbar, .step-footer { display: none !important; }
+    body { background: white; }
+    #builder-view { padding: 0; }
+    .step-panel { display: none !important; }
+    .step-panel[data-step="5"] { display: block !important; }
+  }
+</style>
+</head>
+<body class="home-view">
+
+<!-- =================== TOP BAR =================== -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="brand">
+      <span class="brand-mark">Signals & Trends</span>
+      <span class="brand-eyebrow">STEEP · Synthesis</span>
+    </div>
+    <button id="back-to-intro">← Intro</button>
+  </div>
+
+  <nav class="step-nav" id="step-nav"></nav>
+
+  <div class="controls">
+    <button class="ctrl-btn" id="load-example" title="Load a worked example">Example</button>
+    <button class="ctrl-btn" id="reset-all" title="Clear and start over">Reset</button>
+    <button class="ctrl-btn" id="print-btn" title="Print the final review">Print</button>
+  </div>
+</header>
+
+<!-- =================== HOME VIEW =================== -->
+<div id="home-view">
+
+  <section class="home-hero">
+    <div class="home-hero-eyebrow">Speculative design · Research synthesis</div>
+    <h1>Signals<br>&amp; <em>Trends.</em></h1>
+    <p class="home-hero-lede">
+      You've been collecting articles, datapoints, observations. This tool helps you turn three of them into one statement that says what's actually emerging.
+    </p>
+    <div class="home-cta">
+      <button class="btn-primary" id="start-btn">Start building →</button>
+      <button class="btn-secondary" id="load-example-2">See a worked example</button>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">01 / What this is for</div>
+    <h2>Signals are noise<br>until you <em>group them</em>.</h2>
+    <p class="lede">A trend statement is the bridge between observation and design.</p>
+    <p class="body">
+      You read three articles. Each one feels like it might mean something. The synthesis muscle is asking: <strong>what do they share that the next three don't?</strong> A trend statement names the shape of that something.
+    </p>
+    <p class="body">
+      The work is bottom-up. Collect signals. Pick the strongest. Articulate what they have in common. Pressure-test. Refine. The tool is a scaffolding for that move, not a generator. You write the trend; the tool helps you see it.
+    </p>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">02 / The STEEP frame</div>
+    <h2>Five places<br>to <em>look.</em></h2>
+    <p class="body">
+      Every signal sits in at least one of these. Tagging a signal forces you to decide what kind of pressure it represents. The strongest trend statements come from clusters that span <strong>two or more categories</strong> — that's when you're seeing a systemic shift, not a narrow one.
+    </p>
+    <div class="steep-grid">
+      <div class="steep-cell social">
+        <div class="letter">S</div>
+        <div class="name">Social</div>
+        <p>Demographics, values, behaviours, generational shifts.</p>
+      </div>
+      <div class="steep-cell tech">
+        <div class="letter">T</div>
+        <div class="name">Technological</div>
+        <p>New capabilities, infrastructures, tools, platforms.</p>
+      </div>
+      <div class="steep-cell economic">
+        <div class="letter">E</div>
+        <div class="name">Economic</div>
+        <p>Markets, capital, labour, business models.</p>
+      </div>
+      <div class="steep-cell environmental">
+        <div class="letter">E</div>
+        <div class="name">Environmental</div>
+        <p>Climate, resources, ecological systems, sustainability.</p>
+      </div>
+      <div class="steep-cell political">
+        <div class="letter">P</div>
+        <div class="name">Political</div>
+        <p>Regulation, governance, geopolitics, civic shifts.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">03 / Three shapes a trend can take</div>
+    <h2>Trend statements<br>have <em>a form.</em></h2>
+    <p class="body">
+      Once you have your three signals, the synthesis happens by picking which shape your trend statement should take. Different signals support different shapes. Recognising which fits is itself a teachable skill.
+    </p>
+    <div class="shapes-grid">
+      <div class="shape-card">
+        <div class="label">Shape 01</div>
+        <h4>Descriptive</h4>
+        <p>Names a pattern that exists right now. Present-tense. Behavioural.</p>
+        <div class="example">"Gen Z demonstrates a heightened awareness of their environmental footprint, reflecting a deliberate approach in their choices."</div>
+      </div>
+      <div class="shape-card">
+        <div class="label">Shape 02</div>
+        <h4>Directional</h4>
+        <p>Names where things are heading. Future-tense. Has a horizon.</p>
+        <div class="example">"Saving will become a central offer of financial services, with young adults as trend-setters."</div>
+      </div>
+      <div class="shape-card">
+        <div class="label">Shape 03</div>
+        <h4>Causal</h4>
+        <p>Names a force enabling or producing something. Cause and effect.</p>
+        <div class="example">"Inward-facing platforms are empowering Gen Z to establish secure, trustworthy communities."</div>
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section">
+    <div class="home-section-num">04 / Five steps</div>
+    <h2>What the tool <em>walks you through.</em></h2>
+    <p class="body">
+      Setup, capture signals, pick three, articulate the shape, pressure-test, review. The synthesis happens in step 3. The pressure-test in step 4 is where you can optionally bring AI in as an adversarial reader, never as an author.
+    </p>
+    <div class="home-cta" style="margin-top: 32px;">
+      <button class="btn-primary" id="start-btn-2">Start building →</button>
+    </div>
+  </section>
+
+  <footer class="home-footer">
+    <span>Signals & Trends · STEEP synthesis</span>
+    <span>Bottom-up research method</span>
+  </footer>
+
+</div>
+
+<!-- =================== BUILDER VIEW =================== -->
+<div id="builder-view">
+
+  <!-- ===== STEP 0: PROJECT SETUP ===== -->
+  <section class="step-panel active" data-step="0">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 00 / 05 · Setup</div>
+      <h1 class="step-title">First, a little <em>context.</em></h1>
+      <p class="step-body">
+        Three short fields to set up your research project. The time horizon shapes what kind of trend statement you'll write later — present-tense if you're describing now, future-tense if you're projecting forward.
+      </p>
+    </div>
+
+    <div class="project-form">
+      <div class="field">
+        <label>Project name</label>
+        <input type="text" id="proj-name" placeholder="e.g. Gen Z banking · Near-future food systems · Post-work leisure">
+        <div class="helper">A short label for your research domain. You'll see this on the final review.</div>
+      </div>
+
+      <div class="field">
+        <label>Time horizon</label>
+        <select id="proj-horizon">
+          <option value="">Select a horizon (optional)</option>
+          <option value="now">Now / present</option>
+          <option value="2-5">2 to 5 years</option>
+          <option value="5-10">5 to 10 years</option>
+          <option value="10+">10 or more years</option>
+        </select>
+        <div class="helper">When does this trend matter? Affects whether your final statement is descriptive (now) or directional (future).</div>
+      </div>
+
+      <div class="field">
+        <label>Research question</label>
+        <input type="text" id="proj-question" placeholder="e.g. How is the relationship between young adults and money changing?">
+        <div class="helper">One sentence. What are you trying to understand?</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEP 1: SIGNALS ===== -->
+  <section class="step-panel" data-step="1">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 01 / 05 · Capture</div>
+      <h1 class="step-title">Build your <em>signal corpus.</em></h1>
+      <p class="step-body">
+        A signal is one piece of evidence — an article, a datapoint, an observation, a quote. Add 5 to 9 of them. <strong>Aim for an odd number</strong>: it forces you to break ties when picking three later. <strong>Tag each one</strong> by which STEEP category it represents.
+      </p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">A signal needs four things</div>
+      <div class="tip-body">A short title, a STEEP tag, a one-line summary, and a private note about <em>why it caught your attention</em>. The last one is where the analytical work happens. Don't skip it.</div>
+    </div>
+
+    <form class="signal-form" id="signal-form" onsubmit="return false;">
+      <select id="sig-cat">
+        <option value="">STEEP tag…</option>
+        <option value="social">Social</option>
+        <option value="tech">Technological</option>
+        <option value="economic">Economic</option>
+        <option value="environmental">Environmental</option>
+        <option value="political">Political</option>
+      </select>
+      <input type="text" id="sig-title" placeholder="Signal title (short)" autocomplete="off">
+      <input type="text" id="sig-summary" placeholder="One-line summary of what it shows" autocomplete="off">
+      <button type="submit" id="add-signal">+ Add</button>
+    </form>
+    <div class="signal-form-extra">
+      <div class="signal-form-extra-row">
+        <input type="url" id="sig-source" placeholder="Source URL (optional)" autocomplete="off">
+        <input type="text" id="sig-why" placeholder="Why it caught your attention (write something honest)" autocomplete="off">
+      </div>
+    </div>
+
+    <div class="signals-list" id="signals-list"></div>
+
+    <div class="count-status" id="signal-count">No signals yet. Aim for 5 to 9.</div>
+  </section>
+
+  <!-- ===== STEP 2: PICK THREE ===== -->
+  <section class="step-panel" data-step="2">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 02 / 05 · Select</div>
+      <h1 class="step-title">Pick the <em>strongest three.</em></h1>
+      <p class="step-body">
+        Click three signals from your corpus. The tool will softly nudge you toward picking from at least <strong>two different STEEP categories</strong>. Cross-category clusters reveal systemic shifts; same-category clusters reveal narrow ones. Both are valid, but you should know which you're doing.
+      </p>
+    </div>
+
+    <div class="pick-info">
+      <div class="pick-counter" id="pick-counter">0 of 3 selected</div>
+      <div class="category-spread" id="category-spread">No selection yet</div>
+    </div>
+
+    <div class="pick-grid" id="pick-grid"></div>
+
+    <div class="why-three" id="why-three-block" style="display: none;">
+      <label>Why these three? What do they share that the others don't?</label>
+      <textarea id="why-three" placeholder="Write a real sentence. The act of articulating the connection is the first synthesis move."></textarea>
+      <div class="helper">
+        <span class="char-count" id="why-char-count">0 chars</span>
+        <span> · aim for at least 50</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEP 3: ARTICULATE ===== -->
+  <section class="step-panel" data-step="3">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 03 / 05 · Articulate</div>
+      <h1 class="step-title">Articulate the <em>connection.</em></h1>
+      <p class="step-body">
+        Three short fields. They're the bones of a trend statement: subject, verb-phrase, consequence. The tool composes a draft on the right as you type. You then rewrite it in your own words at the bottom.
+      </p>
+    </div>
+
+    <div class="tip">
+      <div class="tip-label">Resist the temptation to write the final statement first</div>
+      <div class="tip-body">Fill in the three fields. Look at the draft. Then rewrite. The bones make the synthesis visible; the rewrite makes it yours.</div>
+    </div>
+
+    <div class="articulate-layout">
+      <div class="articulate-fields">
+        <div class="field-card">
+          <div class="field-num">01 · The subject</div>
+          <div class="field-label">Who or what is this about?</div>
+          <div class="field-helper">A specific actor, group, or thing. "Gen Z consumers" not "people." "Independent musicians" not "artists."</div>
+          <textarea id="art-subject" placeholder="e.g. Gen Z consumers · young adults · urban renters · independent musicians"></textarea>
+        </div>
+        <div class="field-card">
+          <div class="field-num">02 · What's happening</div>
+          <div class="field-label">The verb-phrase. What are they doing or experiencing?</div>
+          <div class="field-helper">Present-tense or future-tense, depending on your time horizon. Strong verbs: forming, demanding, rejecting, becoming, shifting.</div>
+          <textarea id="art-verb" placeholder="e.g. are forming inward-facing communities · will demand transparent supply chains"></textarea>
+        </div>
+        <div class="field-card">
+          <div class="field-num">03 · The consequence</div>
+          <div class="field-label">The "so what". What does this lead to or enable?</div>
+          <div class="field-helper">The bigger pattern your three signals are part of. Why this matters beyond the surface behaviour.</div>
+          <textarea id="art-consequence" placeholder="e.g. as a way to find safer spaces for peer-to-peer exchange · reshaping what trust means in commerce"></textarea>
+        </div>
+      </div>
+
+      <aside class="draft-panel">
+        <div class="draft-label">Live draft</div>
+        <div class="draft-text" id="draft-text"></div>
+
+        <div class="shape-toggle">
+          <div class="shape-toggle-label">Optional · Shape the draft</div>
+          <div class="shape-options" id="shape-options">
+            <button class="shape-option" data-shape="raw">As written</button>
+            <button class="shape-option" data-shape="descriptive">Descriptive</button>
+            <button class="shape-option" data-shape="directional">Directional</button>
+            <button class="shape-option" data-shape="causal">Causal</button>
+          </div>
+          <div class="shape-option-helper" id="shape-helper">The shape just rephrases your three fields. Pick whichever fits the signals.</div>
+        </div>
+
+        <div class="final-statement">
+          <label>Your trend statement (rewrite in your own words)</label>
+          <textarea id="final-statement" placeholder="Take the draft and rewrite it. Add nuance. Cut filler. Make it sound like you wrote it, not the tool."></textarea>
+          <div class="helper">This is what carries through to step 4 and the final review.</div>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <!-- ===== STEP 4: PRESSURE TEST ===== -->
+  <section class="step-panel" data-step="4">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 04 / 05 · Pressure-test</div>
+      <h1 class="step-title">Now try to <em>break it.</em></h1>
+      <p class="step-body">
+        Three default questions, designed to make you defend your synthesis. Answer them in your own words. The act of writing the answer <strong>is</strong> the test. There's an optional AI pressure-test below if you want sharper, statement-specific questions, but the three defaults do the real work.
+      </p>
+    </div>
+
+    <div class="pt-statement">
+      <div class="pt-statement-label">Your trend statement</div>
+      <div class="pt-statement-text" id="pt-statement-text">Write your trend statement in step 3 first.</div>
+    </div>
+
+    <div class="pt-list" id="pt-list"></div>
+
+    <div class="ai-section">
+      <button class="ai-toggle" id="ai-toggle"><span class="chev">▸</span><span>Advanced · AI pressure-test (paid)</span></button>
+
+      <div class="ai-panel" id="ai-panel">
+        <h3>Want even sharper questions, generated by Claude?</h3>
+        <p>If you have an Anthropic API account, Claude can read your trend statement and three signals, then generate three more adversarial questions tailored to your specific synthesis. The AI never writes the trend itself, only challenges what you've written.</p>
+        <p class="note"><strong>Cost note:</strong> the Anthropic API is paid. New accounts get a small starter credit (~$5), but you'll need to add a payment method at <a href="https://console.anthropic.com/" target="_blank" rel="noopener" style="color: var(--accent);">console.anthropic.com</a>. Each pressure-test call costs about half a cent. The three default questions above already do most of the pedagogical work, so this is genuinely optional.</p>
+        <div class="ai-panel-actions">
+          <button id="ai-generate-btn">Generate AI questions →</button>
+          <button class="outline" id="ai-key-btn">Set up API key</button>
+        </div>
+        <div class="ai-status" id="ai-status"></div>
+      </div>
+
+      <div class="ai-key-form" id="ai-key-form">
+        <label>Anthropic API key</label>
+        <input type="password" id="ai-key-input" placeholder="sk-ant-..." autocomplete="off">
+        <div class="helper">
+          Your key is saved only in this browser (localStorage), never sent anywhere except directly to Anthropic. Get a key at <a href="https://console.anthropic.com/" target="_blank" rel="noopener">console.anthropic.com</a> after adding payment.
+        </div>
+        <div class="key-actions">
+          <button id="save-key-btn">Save key</button>
+          <button class="outline" id="cancel-key-btn">Cancel</button>
+          <button class="outline" id="clear-key-btn" style="margin-left: auto;">Clear saved key</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== STEP 5: REVIEW ===== -->
+  <section class="step-panel" data-step="5">
+    <div class="step-header">
+      <div class="step-eyebrow">Step 05 / 05 · Final output</div>
+      <h1 class="step-title">Your <em>trend statement.</em></h1>
+      <p class="step-body">
+        This is the final synthesis. Edit anything by jumping back to its step; this view updates live. Print or save as PDF for your deliverable.
+      </p>
+    </div>
+
+    <div class="review-panel">
+      <div class="review-header">
+        <div class="review-project" id="review-project">Untitled project</div>
+        <div class="review-question" id="review-question"></div>
+      </div>
+
+      <div class="review-statement">
+        <div class="review-statement-label">Trend statement</div>
+        <div class="review-statement-text" id="review-statement-text">Complete steps 1-3 to see your trend statement.</div>
+      </div>
+
+      <div class="review-section-label">Three supporting signals</div>
+      <div class="review-signals" id="review-signals"></div>
+
+      <div class="review-section-label">How this trend was tested</div>
+      <div class="review-test" id="review-test"></div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER NAV ===== -->
+  <div class="step-footer">
+    <button class="nav-btn" id="prev-step">← Previous</button>
+    <button class="nav-btn primary" id="next-step">Continue →</button>
+  </div>
+
+</div>
+
+<script>
+  // ============================================
+  // STATE
+  // ============================================
+  const STEP_LABELS = [
+    { n: "00", label: "Setup" },
+    { n: "01", label: "Capture" },
+    { n: "02", label: "Select" },
+    { n: "03", label: "Articulate" },
+    { n: "04", label: "Test" },
+    { n: "05", label: "Review" }
+  ];
+  const STEEP_NAMES = {
+    social: "Social",
+    tech: "Technological",
+    economic: "Economic",
+    environmental: "Environmental",
+    political: "Political"
+  };
+  const DEFAULT_PT_QUESTIONS = [
+    "What would make this trend statement false?",
+    "What's the strongest counter-signal you've encountered, and why didn't you pick it?",
+    "Is this a trend, or just a moment? What sustains it?"
+  ];
+
+  let state = newState();
+
+  function newState() {
+    return {
+      step: 0,
+      project: { name: "", horizon: "", question: "" },
+      signals: [],     // { id, category, title, summary, source, why }
+      selectedIds: [],
+      whyThree: "",
+      articulation: { subject: "", verb: "", consequence: "" },
+      shape: "raw",
+      finalStatement: "",
+      pressureTest: {},   // { qIndex: answer } for default 0,1,2
+      aiQuestions: [],    // [{ q, a }]
+      aiKey: localStorage.getItem("trendsignals-anthropic-key") || ""
+    };
+  }
+
+  // ============================================
+  // UTIL
+  // ============================================
+  function uid() { return Math.random().toString(36).slice(2, 10); }
+  function escapeHTML(s) {
+    return String(s || "").replace(/[&<>"']/g, c => ({
+      "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+    }[c]));
+  }
+
+  // ============================================
+  // VIEW SWITCHING
+  // ============================================
+  function setView(v) {
+    document.body.classList.remove("home-view", "builder-view");
+    document.body.classList.add(v + "-view");
+    window.scrollTo(0, 0);
+  }
+  document.getElementById("back-to-intro").onclick = () => setView("home");
+  document.getElementById("start-btn").onclick = () => { setView("builder"); goToStep(0); };
+  document.getElementById("start-btn-2").onclick = () => { setView("builder"); goToStep(0); };
+  document.getElementById("load-example-2").onclick = () => {
+    loadExample(); setView("builder"); goToStep(5);
+  };
+
+  // ============================================
+  // STEP NAVIGATION
+  // ============================================
+  function renderStepNav() {
+    const nav = document.getElementById("step-nav");
+    nav.innerHTML = "";
+    STEP_LABELS.forEach((s, i) => {
+      const b = document.createElement("button");
+      b.className = "step-btn";
+      if (i === state.step) b.classList.add("active");
+      if (stepComplete(i)) b.classList.add("complete");
+      b.innerHTML = `<span class="num">${s.n}</span><span>${s.label}</span>`;
+      b.onclick = () => goToStep(i);
+      nav.appendChild(b);
+    });
+  }
+
+  function stepComplete(n) {
+    if (n === 0) return state.project.name.trim().length > 0;
+    if (n === 1) return state.signals.length >= 3;
+    if (n === 2) return state.selectedIds.length === 3 && state.whyThree.trim().length >= 30;
+    if (n === 3) return state.finalStatement.trim().length >= 20;
+    if (n === 4) return Object.values(state.pressureTest).filter(a => (a || "").trim().length > 10).length >= 1;
+    return false;
+  }
+
+  function goToStep(n) {
+    state.step = n;
+    document.querySelectorAll(".step-panel").forEach(p => {
+      p.classList.toggle("active", parseInt(p.dataset.step, 10) === n);
+    });
+    renderStepNav();
+    renderCurrentStep();
+    updateNavButtons();
+    window.scrollTo(0, 0);
+  }
+
+  function updateNavButtons() {
+    const prev = document.getElementById("prev-step");
+    const next = document.getElementById("next-step");
+    prev.disabled = state.step === 0;
+    if (state.step === 5) {
+      next.textContent = "Print ↓";
+      next.onclick = () => window.print();
+    } else {
+      next.textContent = "Continue →";
+      next.onclick = () => goToStep(state.step + 1);
+    }
+  }
+  document.getElementById("prev-step").onclick = () => {
+    if (state.step > 0) goToStep(state.step - 1);
+  };
+  document.getElementById("next-step").onclick = () => goToStep(state.step + 1);
+
+  // ============================================
+  // STEP 0: PROJECT SETUP
+  // ============================================
+  function renderProject() {
+    document.getElementById("proj-name").value = state.project.name;
+    document.getElementById("proj-horizon").value = state.project.horizon;
+    document.getElementById("proj-question").value = state.project.question;
+  }
+  ["proj-name", "proj-horizon", "proj-question"].forEach(id => {
+    document.addEventListener("input", e => {
+      if (e.target.id !== id) return;
+      const key = id.replace("proj-", "");
+      const map = { name: "name", horizon: "horizon", question: "question" };
+      state.project[map[key]] = e.target.value;
+      renderStepNav();
+    });
+  });
+
+  // ============================================
+  // STEP 1: SIGNALS
+  // ============================================
+  function renderSignals() {
+    const list = document.getElementById("signals-list");
+    list.innerHTML = "";
+    state.signals.forEach((s, i) => {
+      const row = document.createElement("div");
+      row.className = `signal-row ${s.category}`;
+      const sourceHtml = s.source
+        ? `<a href="${escapeHTML(s.source)}" class="source-link" target="_blank" rel="noopener">${escapeHTML(s.source)}</a>`
+        : "";
+      row.innerHTML = `
+        <span class="tag">${STEEP_NAMES[s.category]}</span>
+        <div class="title" contenteditable="true" data-id="${s.id}" data-field="title">${escapeHTML(s.title)}</div>
+        <div class="summary-wrap">
+          <div class="summary" contenteditable="true" data-id="${s.id}" data-field="summary">${escapeHTML(s.summary)}</div>
+          <div class="why" contenteditable="true" data-id="${s.id}" data-field="why" data-placeholder="Why this caught your attention…">${escapeHTML(s.why || "")}</div>
+          ${sourceHtml}
+        </div>
+        <span class="signal-num">${String(i+1).padStart(2,'0')}</span>
+        <button class="remove" data-id="${s.id}" title="Remove">×</button>
+      `;
+      list.appendChild(row);
+    });
+    updateSignalCount();
+  }
+
+  function updateSignalCount() {
+    const el = document.getElementById("signal-count");
+    const c = state.signals.length;
+    const cats = new Set(state.signals.map(s => s.category));
+    const breakdown = cats.size > 0
+      ? `<span class="breakdown">${cats.size} STEEP categor${cats.size === 1 ? 'y' : 'ies'}</span>`
+      : "";
+    el.classList.toggle("ok", c >= 5 && c <= 9 && c % 2 === 1);
+    if (c === 0) el.innerHTML = "No signals yet. Aim for 5 to 9.";
+    else if (c < 5) el.innerHTML = `${c} signal${c === 1 ? "" : "s"}. Add at least ${5 - c} more.${breakdown}`;
+    else if (c % 2 === 0) el.innerHTML = `${c} signals. Odd numbers help break ties — try ${c+1}?${breakdown}`;
+    else if (c > 9) el.innerHTML = `${c} signals. Past 9 is plenty — go pick three.${breakdown}`;
+    else el.innerHTML = `${c} signals captured. Ready to pick three.${breakdown}`;
+  }
+
+  document.getElementById("signal-form").addEventListener("submit", e => {
+    e.preventDefault();
+    addSignal();
+  });
+  document.getElementById("add-signal").onclick = addSignal;
+
+  function addSignal() {
+    const cat = document.getElementById("sig-cat").value;
+    const title = document.getElementById("sig-title").value.trim();
+    const summary = document.getElementById("sig-summary").value.trim();
+    const source = document.getElementById("sig-source").value.trim();
+    const why = document.getElementById("sig-why").value.trim();
+    if (!cat) { document.getElementById("sig-cat").focus(); return; }
+    if (!title) { document.getElementById("sig-title").focus(); return; }
+    if (!summary) { document.getElementById("sig-summary").focus(); return; }
+
+    state.signals.push({
+      id: uid(), category: cat, title, summary, source, why
+    });
+    document.getElementById("sig-cat").value = "";
+    document.getElementById("sig-title").value = "";
+    document.getElementById("sig-summary").value = "";
+    document.getElementById("sig-source").value = "";
+    document.getElementById("sig-why").value = "";
+    document.getElementById("sig-cat").focus();
+    renderSignals();
+    renderStepNav();
+  }
+
+  document.getElementById("signals-list").addEventListener("click", e => {
+    if (e.target.classList.contains("remove")) {
+      const id = e.target.dataset.id;
+      state.signals = state.signals.filter(x => x.id !== id);
+      state.selectedIds = state.selectedIds.filter(x => x !== id);
+      renderSignals();
+      renderStepNav();
+    }
+  });
+  document.getElementById("signals-list").addEventListener("input", e => {
+    const t = e.target;
+    if (!t.dataset.id || !t.dataset.field) return;
+    const s = state.signals.find(x => x.id === t.dataset.id);
+    if (!s) return;
+    s[t.dataset.field] = t.textContent;
+  });
+
+  // ============================================
+  // STEP 2: PICK THREE
+  // ============================================
+  function renderPick() {
+    const grid = document.getElementById("pick-grid");
+    grid.innerHTML = "";
+    if (state.signals.length === 0) {
+      grid.innerHTML = `<div class="tip" style="grid-column: 1/-1;"><div class="tip-label">No signals yet</div><div class="tip-body">Go back to step 1 to capture some signals first.</div></div>`;
+    }
+    state.signals.forEach(s => {
+      const c = document.createElement("div");
+      c.className = `pick-card ${s.category}${state.selectedIds.includes(s.id) ? " selected" : ""}`;
+      c.dataset.id = s.id;
+      c.innerHTML = `
+        <div class="pick-tag">${STEEP_NAMES[s.category]}</div>
+        <div class="pick-title">${escapeHTML(s.title)}</div>
+        <div class="pick-summary">${escapeHTML(s.summary)}</div>
+        <div class="pick-check"></div>
+      `;
+      c.onclick = () => togglePick(s.id);
+      grid.appendChild(c);
+    });
+
+    // Counter
+    const cnt = document.getElementById("pick-counter");
+    cnt.textContent = `${state.selectedIds.length} of 3 selected`;
+    cnt.classList.toggle("ready", state.selectedIds.length === 3);
+
+    // Category spread
+    const spread = document.getElementById("category-spread");
+    if (state.selectedIds.length === 0) {
+      spread.textContent = "No selection yet";
+      spread.className = "category-spread";
+    } else {
+      const cats = new Set(state.selectedIds
+        .map(id => state.signals.find(s => s.id === id))
+        .filter(Boolean)
+        .map(s => s.category));
+      if (cats.size === 1) {
+        spread.textContent = `· Same category (${STEEP_NAMES[Array.from(cats)[0]]}). Consider mixing.`;
+        spread.className = "category-spread warn";
+      } else {
+        spread.textContent = `· Spans ${cats.size} categories. Strong cross-cluster.`;
+        spread.className = "category-spread ok";
+      }
+    }
+
+    // Why three block
+    const block = document.getElementById("why-three-block");
+    block.style.display = state.selectedIds.length === 3 ? "block" : "none";
+    document.getElementById("why-three").value = state.whyThree;
+    updateWhyCount();
+  }
+
+  function togglePick(id) {
+    const i = state.selectedIds.indexOf(id);
+    if (i >= 0) state.selectedIds.splice(i, 1);
+    else if (state.selectedIds.length < 3) state.selectedIds.push(id);
+    renderPick();
+    renderStepNav();
+  }
+
+  function updateWhyCount() {
+    const el = document.getElementById("why-char-count");
+    if (!el) return;
+    const c = state.whyThree.trim().length;
+    el.textContent = `${c} chars`;
+    el.classList.toggle("ok", c >= 50);
+  }
+
+  document.addEventListener("input", e => {
+    if (e.target.id === "why-three") {
+      state.whyThree = e.target.value;
+      updateWhyCount();
+      renderStepNav();
+    }
+  });
+
+  // ============================================
+  // STEP 3: ARTICULATE
+  // ============================================
+  function renderArticulate() {
+    document.getElementById("art-subject").value = state.articulation.subject;
+    document.getElementById("art-verb").value = state.articulation.verb;
+    document.getElementById("art-consequence").value = state.articulation.consequence;
+    document.getElementById("final-statement").value = state.finalStatement;
+    document.querySelectorAll(".shape-option").forEach(b => {
+      b.classList.toggle("active", b.dataset.shape === state.shape);
+    });
+    renderDraft();
+  }
+
+  function buildDraft(shape) {
+    const a = state.articulation;
+    const s = a.subject.trim();
+    const v = a.verb.trim();
+    const c = a.consequence.trim();
+    const slot = (val, ph) => val
+      ? `<span class="slot">${escapeHTML(val)}</span>`
+      : `<span class="placeholder">${escapeHTML(ph)}</span>`;
+
+    if (shape === "descriptive") {
+      // "X demonstrates Y, leading to Z"
+      const parts = [
+        slot(s, "[subject]"), " demonstrates ",
+        slot(v, "[the pattern]"), ", reflecting ",
+        slot(c, "[the consequence]"), "."
+      ];
+      return parts.join("");
+    }
+    if (shape === "directional") {
+      const horizon = state.project.horizon;
+      const horizonText = horizon && horizon !== "now"
+        ? `Over the next ${horizon === "10+" ? "10+ years" : horizon + " years"}, `
+        : "";
+      const parts = [
+        horizonText,
+        slot(s, "[subject]"), " will ",
+        slot(v, "[verb-phrase]"), ", ",
+        slot(c, "[the consequence]"), "."
+      ];
+      return parts.join("");
+    }
+    if (shape === "causal") {
+      // Try: "X is enabling Y to Z"  or  "X is being shaped by Y, producing Z"
+      const parts = [
+        slot(s, "[subject]"), " ",
+        slot(v, "[are doing X]"), ", ",
+        slot(c, "[which produces / enables Z]"), "."
+      ];
+      return parts.join("");
+    }
+    // raw
+    const parts = [
+      slot(s, "[subject]"), " ",
+      slot(v, "[verb-phrase]"), ", ",
+      slot(c, "[consequence]"), "."
+    ];
+    return parts.join("");
+  }
+
+  function renderDraft() {
+    document.getElementById("draft-text").innerHTML = buildDraft(state.shape);
+    const helpers = {
+      raw: "Default shape. Just a clean subject-verb-consequence.",
+      descriptive: "Names a present-tense pattern. Good for behavioural signals.",
+      directional: "Adds a time horizon. Good when your signals point forward.",
+      causal: "Frames cause and effect. Good when signals show one thing enabling another."
+    };
+    document.getElementById("shape-helper").textContent = helpers[state.shape] || helpers.raw;
+  }
+
+  document.addEventListener("input", e => {
+    if (e.target.id === "art-subject") { state.articulation.subject = e.target.value; renderDraft(); }
+    if (e.target.id === "art-verb") { state.articulation.verb = e.target.value; renderDraft(); }
+    if (e.target.id === "art-consequence") { state.articulation.consequence = e.target.value; renderDraft(); }
+    if (e.target.id === "final-statement") { state.finalStatement = e.target.value; renderStepNav(); }
+  });
+
+  document.querySelectorAll(".shape-option").forEach(b => {
+    b.onclick = () => {
+      state.shape = b.dataset.shape;
+      document.querySelectorAll(".shape-option").forEach(x => {
+        x.classList.toggle("active", x.dataset.shape === state.shape);
+      });
+      renderDraft();
+    };
+  });
+
+  // ============================================
+  // STEP 4: PRESSURE TEST
+  // ============================================
+  function renderPressureTest() {
+    document.getElementById("pt-statement-text").textContent = state.finalStatement.trim() ||
+      "Write your trend statement in step 3 first.";
+
+    const list = document.getElementById("pt-list");
+    list.innerHTML = "";
+
+    DEFAULT_PT_QUESTIONS.forEach((q, i) => {
+      const card = document.createElement("div");
+      card.className = "pt-card";
+      card.innerHTML = `
+        <div class="pt-num">Question ${String(i+1).padStart(2,"0")}</div>
+        <div class="pt-question">${escapeHTML(q)}</div>
+        <textarea data-pt-idx="${i}" placeholder="Write your answer in plain language. The act of answering is the test.">${escapeHTML(state.pressureTest[i] || "")}</textarea>
+      `;
+      list.appendChild(card);
+    });
+
+    state.aiQuestions.forEach((aq, i) => {
+      const card = document.createElement("div");
+      card.className = "pt-card ai";
+      card.innerHTML = `
+        <div class="pt-num">AI Question ${String(i+1).padStart(2,"0")}</div>
+        <div class="pt-question">${escapeHTML(aq.q)}</div>
+        <textarea data-ai-idx="${i}" placeholder="Your answer (optional).">${escapeHTML(aq.a || "")}</textarea>
+      `;
+      list.appendChild(card);
+    });
+
+    // AI status
+    updateAIStatusForKey();
+  }
+
+  document.addEventListener("input", e => {
+    const idx = e.target.dataset.ptIdx;
+    if (idx !== undefined) {
+      state.pressureTest[parseInt(idx, 10)] = e.target.value;
+      renderStepNav();
+    }
+    const aiIdx = e.target.dataset.aiIdx;
+    if (aiIdx !== undefined) {
+      state.aiQuestions[parseInt(aiIdx, 10)].a = e.target.value;
+    }
+  });
+
+  // ============================================
+  // STEP 4: AI INTEGRATION
+  // ============================================
+  function updateAIStatusForKey() {
+    const status = document.getElementById("ai-status");
+    if (state.aiKey) {
+      status.textContent = "API key saved. Click 'Generate AI questions' to begin.";
+      status.className = "ai-status success";
+    } else {
+      status.textContent = "No API key set. Click 'Set up API key' to configure.";
+      status.className = "ai-status";
+    }
+  }
+
+  document.getElementById("ai-toggle").onclick = () => {
+    const toggle = document.getElementById("ai-toggle");
+    const panel = document.getElementById("ai-panel");
+    toggle.classList.toggle("open");
+    panel.classList.toggle("open");
+  };
+
+  document.getElementById("ai-key-btn").onclick = () => {
+    const form = document.getElementById("ai-key-form");
+    form.classList.toggle("open");
+    if (form.classList.contains("open")) {
+      document.getElementById("ai-key-input").value = state.aiKey || "";
+    }
+  };
+  document.getElementById("cancel-key-btn").onclick = () => {
+    document.getElementById("ai-key-form").classList.remove("open");
+  };
+  document.getElementById("save-key-btn").onclick = () => {
+    const key = document.getElementById("ai-key-input").value.trim();
+    if (!key) return;
+    state.aiKey = key;
+    localStorage.setItem("trendsignals-anthropic-key", key);
+    document.getElementById("ai-key-form").classList.remove("open");
+    updateAIStatusForKey();
+  };
+  document.getElementById("clear-key-btn").onclick = () => {
+    state.aiKey = "";
+    localStorage.removeItem("trendsignals-anthropic-key");
+    document.getElementById("ai-key-input").value = "";
+    updateAIStatusForKey();
+  };
+
+  document.getElementById("ai-generate-btn").onclick = async () => {
+    if (!state.aiKey) {
+      const status = document.getElementById("ai-status");
+      status.textContent = "Set up your API key first (click the button next to this one).";
+      status.className = "ai-status error";
+      return;
+    }
+    if (!state.finalStatement.trim()) {
+      const status = document.getElementById("ai-status");
+      status.textContent = "Write a trend statement in step 3 first.";
+      status.className = "ai-status error";
+      return;
+    }
+    if (state.selectedIds.length !== 3) {
+      const status = document.getElementById("ai-status");
+      status.textContent = "Pick three signals in step 2 first.";
+      status.className = "ai-status error";
+      return;
+    }
+
+    const btn = document.getElementById("ai-generate-btn");
+    const status = document.getElementById("ai-status");
+    btn.disabled = true;
+    status.textContent = "Asking Claude to challenge your synthesis…";
+    status.className = "ai-status loading";
+
+    try {
+      const questions = await callClaudeForQuestions();
+      state.aiQuestions = questions.map(q => ({ q, a: "" }));
+      renderPressureTest();
+      btn.disabled = false;
+      status.textContent = `Got ${questions.length} adversarial questions.`;
+      status.className = "ai-status success";
+    } catch (err) {
+      btn.disabled = false;
+      status.textContent = "Error: " + (err.message || "could not reach Claude");
+      status.className = "ai-status error";
+    }
+  };
+
+  async function callClaudeForQuestions() {
+    const sigs = state.selectedIds
+      .map(id => state.signals.find(s => s.id === id))
+      .filter(Boolean);
+    const sigText = sigs.map((s, i) =>
+      `Signal ${i+1} (${STEEP_NAMES[s.category]}): ${s.title}. ${s.summary}${s.why ? " — Why noticed: " + s.why : ""}`
+    ).join("\n");
+
+    const prompt = `You are an adversarial reader helping a design researcher pressure-test a trend statement. Your job is to ask sharp, specific, challenging questions — never to agree, never to soften, never to write the trend statement yourself.
+
+The researcher has written this trend statement:
+"${state.finalStatement.trim()}"
+
+It is based on these three signals:
+${sigText}
+
+Their stated reason for picking these three: "${state.whyThree.trim()}"
+
+Generate exactly 3 adversarial questions designed to expose weaknesses in this trend synthesis. Each question should:
+- Be specific to THIS statement and THESE signals (not generic)
+- Force the researcher to defend a real choice they made
+- Be answerable but uncomfortable
+
+Format your response as a JSON array of exactly 3 strings, no other text. Example: ["Question 1?", "Question 2?", "Question 3?"]`;
+
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": state.aiKey,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-haiku-4-5-20251001",
+        max_tokens: 1024,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+
+    if (!res.ok) {
+      const errText = await res.text();
+      let errMsg = "API error " + res.status;
+      try {
+        const errObj = JSON.parse(errText);
+        errMsg = errObj.error?.message || errMsg;
+      } catch(e) {}
+      throw new Error(errMsg);
+    }
+    const data = await res.json();
+    const text = data.content?.[0]?.text || "";
+    // Extract JSON array
+    const match = text.match(/\[[\s\S]*\]/);
+    if (!match) throw new Error("Could not parse AI response");
+    const arr = JSON.parse(match[0]);
+    if (!Array.isArray(arr) || arr.length === 0) throw new Error("AI returned empty list");
+    return arr.slice(0, 3).map(q => String(q));
+  }
+
+  // ============================================
+  // STEP 5: REVIEW
+  // ============================================
+  function renderReview() {
+    document.getElementById("review-project").textContent =
+      (state.project.name.trim() || "Untitled project") +
+      (state.project.horizon ? " · " + horizonLabel(state.project.horizon) : "");
+
+    const q = document.getElementById("review-question");
+    if (state.project.question.trim()) {
+      q.innerHTML = escapeHTML(state.project.question.trim());
+    } else {
+      q.textContent = "";
+    }
+
+    const stmt = document.getElementById("review-statement-text");
+    stmt.textContent = state.finalStatement.trim() || "Complete steps 1-3 to see your trend statement.";
+
+    // Signals
+    const sigBox = document.getElementById("review-signals");
+    sigBox.innerHTML = "";
+    state.selectedIds.forEach(id => {
+      const s = state.signals.find(x => x.id === id);
+      if (!s) return;
+      const card = document.createElement("div");
+      card.className = `review-signal ${s.category}`;
+      card.innerHTML = `
+        <div class="rs-tag">${STEEP_NAMES[s.category]}</div>
+        <h4>${escapeHTML(s.title)}</h4>
+        <p class="summary">${escapeHTML(s.summary)}</p>
+        ${s.source ? `<a class="source" href="${escapeHTML(s.source)}" target="_blank" rel="noopener">${escapeHTML(s.source)}</a>` : ""}
+      `;
+      sigBox.appendChild(card);
+    });
+
+    // Pressure test answers
+    const testBox = document.getElementById("review-test");
+    testBox.innerHTML = "";
+    DEFAULT_PT_QUESTIONS.forEach((q, i) => {
+      const a = (state.pressureTest[i] || "").trim();
+      const item = document.createElement("div");
+      item.className = "review-test-item";
+      item.innerHTML = `
+        <div class="rt-q">${escapeHTML(q)}</div>
+        <div class="rt-a${a ? "" : " empty"}">${a ? escapeHTML(a) : "(no answer)"}</div>
+      `;
+      testBox.appendChild(item);
+    });
+    state.aiQuestions.forEach(aq => {
+      const a = (aq.a || "").trim();
+      const item = document.createElement("div");
+      item.className = "review-test-item ai";
+      item.innerHTML = `
+        <div class="rt-q">${escapeHTML(aq.q)}<span class="ai-tag">AI</span></div>
+        <div class="rt-a${a ? "" : " empty"}">${a ? escapeHTML(a) : "(no answer)"}</div>
+      `;
+      testBox.appendChild(item);
+    });
+  }
+
+  function horizonLabel(h) {
+    const map = { now: "Present", "2-5": "2-5 years", "5-10": "5-10 years", "10+": "10+ years" };
+    return map[h] || h;
+  }
+
+  // ============================================
+  // CURRENT STEP RENDER
+  // ============================================
+  function renderCurrentStep() {
+    if (state.step === 0) renderProject();
+    else if (state.step === 1) renderSignals();
+    else if (state.step === 2) renderPick();
+    else if (state.step === 3) renderArticulate();
+    else if (state.step === 4) renderPressureTest();
+    else if (state.step === 5) renderReview();
+  }
+
+  // ============================================
+  // EXAMPLE / RESET
+  // ============================================
+  function loadExample() {
+    const aiKeyBackup = state.aiKey;
+    state = newState();
+    state.aiKey = aiKeyBackup;
+
+    state.project = {
+      name: "The future of family recipes",
+      horizon: "5-10",
+      question: "How is the way families pass down and practice food culture changing as kitchens, climates, and households shift?"
+    };
+
+    const ids = Array.from({length: 7}, () => uid());
+    state.signals = [
+      { id: ids[0], category: "social", title: "Grandparents on FaceTime, cooking together", summary: "Migrant families increasingly cook with elders over video call — recipes taught by gesture and reaction, not text.", source: "", why: "The kitchen has quietly become a mediated space. Recipes aren't documents anymore, they're live performances across time zones." },
+      { id: ids[1], category: "tech", title: "Voice AI cloned from grandparents", summary: "Services let families train a voice model on a grandparent's old recordings, used in cooking guidance apps after they pass.", source: "", why: "Slightly uncomfortable. But the demand is real. People want the voice back, not just the recipe." },
+      { id: ids[2], category: "environmental", title: "Heirloom ingredients disappearing from supply chains", summary: "Specific rice varietals, regional herbs, and traditional cheeses are vanishing due to climate stress and industrial consolidation.", source: "", why: "The recipe survives but the ingredients don't. Forces a question: is a dish still itself if the components are substitutes?" },
+      { id: ids[3], category: "tech", title: "Recipe apps ditch the list, use video", summary: "TikTok and Instagram Reels have replaced text-based recipe blogs as the dominant way under-35s learn to cook.", source: "", why: "Cooking knowledge is becoming embodied again — watch someone's hands, copy them. Closer to apprenticeship than reading." },
+      { id: ids[4], category: "social", title: "Diaspora cookbooks as memoir, not manual", summary: "A wave of cookbooks (e.g. Ottolenghi's Jerusalem, Asma Khan's Asma's Indian Kitchen) frames recipes as memory, identity, and politics rather than just instructions.", source: "", why: "The cookbook genre is mutating. Recipes are now narrative anchors for displaced or hybrid identities." },
+      { id: ids[5], category: "economic", title: "Smart kitchens with AI cooking assistants", summary: "Brands like Anova, June, and now Samsung embed AI that adjusts cook times, suggests substitutions, even narrates the process.", source: "", why: "The kitchen is gaining a co-pilot. Whether that co-pilot replaces a teaching elder is the open question." },
+      { id: ids[6], category: "environmental", title: "Plant-based reinventions of meat-heavy heritage dishes", summary: "Communities are creating vegetarian versions of biryani, feijoada, pho — keeping the cultural form, swapping the substance.", source: "", why: "Climate pressure is forcing recipes to evolve. Tradition is being negotiated mid-cook." }
+    ];
+
+    // Cross-cluster: Social + Tech + Environmental (3 STEEP categories)
+    state.selectedIds = [ids[0], ids[1], ids[2]];
+    state.whyThree = "All three are about absence and how we compensate for it. The grandparent isn't in the kitchen — we use video. The grandparent isn't alive — we synthesise their voice. The ingredient doesn't exist anymore — we substitute. They share a logic: technology and adaptation are stepping in where presence used to be. The other signals describe the broader mediation of cooking; these three name the loss underneath it.";
+
+    state.articulation = {
+      subject: "the loss of physical presence in family cooking",
+      verb: "is producing a new generation of mediating technologies — video, voice synthesis, ingredient substitution",
+      consequence: "redefining what it means to inherit a recipe, from a thing you copy to a relationship you maintain across distance, death, and disappearance"
+    };
+    state.shape = "causal";
+    state.finalStatement = "The disappearance of physical presence in family cooking — through migration, mortality, and ecological loss — is producing a new layer of mediating technology that turns recipes from instructions into ongoing relationships. Inheriting a recipe is no longer copying steps; it's negotiating an absence.";
+    state.pressureTest = {
+      0: "It assumes presence-loss is the dominant force. If most families never had close cooking relationships in the first place (urbanisation, nuclear families, pre-existing distance), the 'loss' framing is overstated and the trend is just normal cultural drift dressed up.",
+      1: "The counter-signal I undersold: people are still cooking together in kitchens — community kitchens, supper clubs, multigenerational households are growing in some places. The trend isn't universal absence, it's bifurcating along class and geography lines. I picked these three signals because they were emotionally resonant, not necessarily because they're the strongest pattern.",
+      2: "I think it's a trend rather than a moment because the underlying drivers — climate, migration, longevity gaps, AI capability — are all structural and slow-moving. The mediating technologies will keep arriving. But the *shape* of the response will keep shifting; what looks like 'voice cloning of grandma' today might look different in 5 years."
+    };
+
+    renderCurrentStep();
+    renderStepNav();
+  }
+
+  document.getElementById("load-example").onclick = () => {
+    if (state.signals.length > 0) {
+      if (!confirm("This will replace your current work with a worked example. Continue?")) return;
+    }
+    loadExample();
+    if (document.body.classList.contains("home-view")) {
+      setView("builder");
+    }
+  };
+  document.getElementById("reset-all").onclick = () => {
+    if (state.signals.length === 0 && !state.project.name) return;
+    if (!confirm("Clear everything and start over?")) return;
+    const aiKeyBackup = state.aiKey;
+    state = newState();
+    state.aiKey = aiKeyBackup;
+    goToStep(0);
+  };
+  document.getElementById("print-btn").onclick = () => {
+    if (state.step !== 5) goToStep(5);
+    setTimeout(() => window.print(), 150);
+  };
+
+  // ============================================
+  // BOOT
+  // ============================================
+  setView("home");
+  renderStepNav();
+  renderCurrentStep();
+  updateNavButtons();
+</script>
+
+</body>
+</html>
