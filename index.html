@@ -17,8 +17,8 @@
     --ink-sec: #6A655E;
     --ink-ter: #A39C90;
     --ink-fade: #C7C1B4;
-    --accent: #C94A2B;
-    --accent-soft: #F0D4C7;
+    --accent: #4A4540;
+    --accent-soft: #DDD8CF;
     --hairline: #D9D3C3;
     --row-customer: #F7E9BE;
 
@@ -38,7 +38,7 @@
 
   body {
     background-image:
-      radial-gradient(circle at 20% 10%, rgba(201, 74, 43, 0.04), transparent 40%),
+      radial-gradient(circle at 20% 10%, rgba(74, 69, 64, 0.04), transparent 40%),
       radial-gradient(circle at 80% 90%, rgba(26, 23, 20, 0.03), transparent 40%);
     display: flex;
     flex-direction: column;
@@ -155,9 +155,9 @@
 
   .tools-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 20px;
-    max-width: 1300px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    max-width: 1400px;
   }
 
   .tool-card {
@@ -260,10 +260,31 @@
 
   /* Visual tag bar at the top of each card */
   .tool-card.blueprint {
-    border-top: 4px solid var(--ink);
+    border-top: 4px solid #C94A2B;
+  }
+  .tool-card.blueprint .meta span::before {
+    background: #C94A2B;
+  }
+  .tool-card.blueprint:hover .arrow {
+    color: #C94A2B;
   }
   .tool-card.valueprop {
-    border-top: 4px solid var(--accent);
+    border-top: 4px solid #2D6A4F;
+  }
+  .tool-card.valueprop .meta span::before {
+    background: #2D6A4F;
+  }
+  .tool-card.valueprop:hover .arrow {
+    color: #2D6A4F;
+  }
+  .tool-card.signals {
+    border-top: 4px solid #1F47D9;
+  }
+  .tool-card.signals .meta span::before {
+    background: #1F47D9;
+  }
+  .tool-card.signals:hover .arrow {
+    color: #1F47D9;
   }
 
   /* ===== FOOTER ===== */
@@ -284,8 +305,10 @@
   }
 
   /* ===== RESPONSIVE ===== */
-  @media (max-width: 900px) {
+  @media (max-width: 1100px) {
     .tools-grid { grid-template-columns: 1fr; }
+  }
+  @media (max-width: 900px) {
     main { padding: 60px 20px 60px; }
     .topbar { padding: 16px 20px; }
     .home-footer { padding: 20px; }
@@ -306,10 +329,10 @@
 </header>
 
 <main>
-  <div class="hero-eyebrow">Two tools, both interactive</div>
+  <div class="hero-eyebrow">Three tools, all interactive</div>
   <h1>Tools that <em>think with you,</em><br>not at you.</h1>
   <p class="lede">
-    Two interactive instruments for teaching design fundamentals: one for mapping services beneath the surface, the other for turning a list of features into a value proposition that says something. Built to be used live, in the room.
+    Three interactive instruments for teaching design fundamentals: one for mapping services beneath the surface, one for building value propositions from the ground up, and one for synthesizing research signals into trend statements. Built to be used live, in the room.
   </p>
 
   <div class="tools-label">The tools</div>
@@ -340,6 +363,20 @@
         <span>5 steps</span>
         <span>Drag to cluster</span>
         <span>Worked example</span>
+      </div>
+      <span class="arrow">Open the tool →</span>
+    </a>
+
+    <a href="trend-signal-builder.html" class="tool-card signals">
+      <div class="tool-num">Tool 03</div>
+      <h2>Signals <em>&amp; Trends</em></h2>
+      <p class="desc">
+        A STEEP-based synthesis tool for speculative design. Capture signals across categories, pick the strongest three, articulate the connection, then pressure-test the trend statement that emerges.
+      </p>
+      <div class="meta">
+        <span>5 steps</span>
+        <span>STEEP framework</span>
+        <span>Optional AI test</span>
       </div>
       <span class="arrow">Open the tool →</span>
     </a>
